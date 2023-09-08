@@ -51,8 +51,8 @@ public class MainLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
-        nav.addItem(new SideNavItem("Autokool: User", AutokoolUserView.class, LineAwesomeIcon.AUTOPREFIXER.create()));
-        nav.addItem(new SideNavItem("Autokool: Admin", AutokoolAdminView.class, LineAwesomeIcon.AUTOPREFIXER.create()));
+        nav.addItem(new SideNavItem("Autokool: User", AutokoolUserView.class));
+        nav.addItem(new SideNavItem("Autokool: Admin", AutokoolAdminView.class));
 
         return nav;
     }
