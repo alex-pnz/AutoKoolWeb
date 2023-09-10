@@ -1,19 +1,19 @@
-package com.fullstackhub.autokoolweb.views.autokooladmin;
+package com.fullstackhub.autokoolweb.views;
 
-import com.fullstackhub.autokoolweb.views.MainLayout;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 
-@PageTitle("Autokool: Admin")
-@Route(value = "admin", layout = MainLayout.class)
-public class AutokoolAdminView extends VerticalLayout {
+@PageTitle("Autokool: Questions")
+@Route(value = "admin-questions", layout = MainLayout.class)
+public class AdminQuestionsView extends VerticalLayout {
 
-    public AutokoolAdminView() {
+    public AdminQuestionsView() {
         setSpacing(false);
 
         Image img = new Image("images/empty-plant.png", "placeholder plant");
