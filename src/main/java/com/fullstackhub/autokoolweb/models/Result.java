@@ -1,6 +1,8 @@
 package com.fullstackhub.autokoolweb.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Objects;
 
@@ -9,10 +11,10 @@ import java.util.Objects;
 public class Result {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer resultId;
+    private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(cascade = CascadeType.REFRESH)
+    @JoinColumn
     private User user;
 
     private Integer result;
@@ -20,18 +22,18 @@ public class Result {
     public Result() {
     }
 
-    public Result(Integer resultId, User user, Integer result) {
-        this.resultId = resultId;
+    public Result(Integer id, User user, Integer result) {
+        this.id = id;
         this.user = user;
         this.result = result;
     }
 
-    public Integer getResultId() {
-        return resultId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setResultId(Integer resultId) {
-        this.resultId = resultId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public User getUser() {
@@ -55,11 +57,16 @@ public class Result {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Result result = (Result) o;
-        return Objects.equals(resultId, result.resultId);
+        return Objects.equals(id, result.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(resultId);
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return result+"";
     }
 }

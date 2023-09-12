@@ -1,1 +1,17 @@
 @import url('./main-layout.css');
+
+.red {
+  color: var(--lumo-error-text-color);
+}
+.admin-chart-hidden{
+    visibility: hidden;
+}
+
+.admin-chart-visible{
+    visibility: visible;
+}
+
+.user-edit{
+    width: 50em;
+
+}

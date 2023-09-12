@@ -17,7 +17,7 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
     private List<Result> results;
 
     public enum Role{
@@ -32,8 +32,15 @@ public class User {
         this.username = name;
         this.password = password;
         this.role = role;
-//        this.results = results;
+        this.results = results;
     }
+    public User(String name, String password, Role role) {
+        this.id = id;
+        this.username = name;
+        this.password = password;
+        this.role = role;
+    }
+
 
     public Integer getId() {
         return id;
@@ -67,7 +74,7 @@ public class User {
         this.role = role;
     }
 
-    public Collection<Result> getResults() {
+    public List<Result> getResults() {
         return Collections.unmodifiableList(results);
     }
 
