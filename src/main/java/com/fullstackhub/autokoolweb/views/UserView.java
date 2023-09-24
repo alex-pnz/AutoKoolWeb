@@ -1,6 +1,5 @@
-package com.fullstackhub.autokoolweb.views.autokooluser;
+package com.fullstackhub.autokoolweb.views;
 
-import com.fullstackhub.autokoolweb.views.MainLayout;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
@@ -8,17 +7,15 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 
 @PageTitle("Autokool: User")
-@Route(value = "user", layout = MainLayout.class)
-@RouteAlias(value = "", layout = MainLayout.class)
-public class AutokoolUserView extends HorizontalLayout {
+@Route(value = "")
+public class UserView extends HorizontalLayout {
 
     private TextField name;
     private Button sayHello;
 
-    public AutokoolUserView() {
+    public UserView() {
         name = new TextField("Your name");
         sayHello = new Button("Say hello");
         sayHello.addClickListener(e -> {

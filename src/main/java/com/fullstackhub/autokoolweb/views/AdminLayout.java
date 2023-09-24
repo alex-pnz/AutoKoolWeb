@@ -1,7 +1,5 @@
 package com.fullstackhub.autokoolweb.views;
 
-import com.fullstackhub.autokoolweb.views.autokooladmin.AutokoolAdminView;
-import com.fullstackhub.autokoolweb.views.autokooluser.AutokoolUserView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.Footer;
@@ -13,16 +11,15 @@ import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import org.vaadin.lineawesome.LineAwesomeIcon;
 
 /**
  * The main view is a top-level placeholder for other views.
  */
-public class MainLayout extends AppLayout {
+public class AdminLayout extends AppLayout {
 
     private H2 viewTitle;
 
-    public MainLayout() {
+    public AdminLayout() {
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
         addHeaderContent();
@@ -51,8 +48,8 @@ public class MainLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
-        nav.addItem(new SideNavItem("Autokool: User", AutokoolUserView.class));
-        nav.addItem(new SideNavItem("Autokool: Admin", AutokoolAdminView.class));
+        nav.addItem(new SideNavItem("Users", AdminUsersView.class));
+        nav.addItem(new SideNavItem("Questions", AdminQuestionsView.class));
 
         return nav;
     }
