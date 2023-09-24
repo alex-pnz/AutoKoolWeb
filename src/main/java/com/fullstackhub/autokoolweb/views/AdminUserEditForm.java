@@ -32,6 +32,7 @@ public class AdminUserEditForm extends FormLayout {
     Button delete = new Button("Удалить");
     private UserAdminViewIn userAdminViewIn;
     private static final Logger logger = LoggerFactory.getLogger(AdminUserEditForm.class);
+    Notification notification = new Notification();
     public AdminUserEditForm() {
         addClassName("admin-user-edit-form");
         binder.bindInstanceFields(this);
@@ -78,7 +79,9 @@ public class AdminUserEditForm extends FormLayout {
         } catch (NullPointerException e){
             Span red = new Span("Выберите студента из списка!");
             red.addClassName("red");
-            new Notification(red).open();
+            notification.close();
+            notification = new Notification(red);
+            notification.open();
             logger.error(e.getMessage());
         } catch (ValidationException e) {
             logger.error(e.getMessage());
@@ -92,7 +95,9 @@ public class AdminUserEditForm extends FormLayout {
         } catch (NullPointerException e){
             Span red = new Span("Выберите студента из списка!");
             red.addClassName("red");
-            new Notification(red).open();
+            notification.close();
+            notification = new Notification(red);
+            notification.open();
             logger.error(e.getMessage());
         } catch (ValidationException e) {
             logger.error(e.getMessage());

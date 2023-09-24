@@ -2,6 +2,7 @@ package com.fullstackhub.autokoolweb.services;
 
 import com.fullstackhub.autokoolweb.dtos.UserAdminViewIn;
 import com.fullstackhub.autokoolweb.mappers.UserAdminViewMapper;
+import com.fullstackhub.autokoolweb.models.Question;
 import com.fullstackhub.autokoolweb.models.User;
 import com.fullstackhub.autokoolweb.repositories.AdminUsersRepository;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,14 @@ public class UserAdminViewService {
 
     public User saveUserToDataBase(User user) {
 
-        //TODO check whether Username is unique and allow editing existing User
+        User tempUser = adminUsersRepository.findByUsername(user.getUsername());
 
-        return adminUsersRepository.save(user);
+        if(tempUser == null || tempUser.getId().equals(user.getId())){
+            return adminUsersRepository.save(user);
+        }
+
+        return null;
+
     }
 
     public boolean deleteUserToDataBase(User user) {
@@ -35,7 +41,4 @@ public class UserAdminViewService {
         return adminUsersRepository.findById(user.getId()).isEmpty();
     }
 
-    public User saveNewUserToDataBase(User user) {
-        return adminUsersRepository.save(user);
-    }
 }

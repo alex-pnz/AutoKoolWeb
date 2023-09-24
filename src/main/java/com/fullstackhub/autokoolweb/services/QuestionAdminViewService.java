@@ -19,15 +19,18 @@ public class QuestionAdminViewService {
     }
 
     public Question saveQuestionToDataBase(Question question) {
-        return adminQuestionsRepository.save(question);
+
+        Question tempQuestion = adminQuestionsRepository.findByQuestion(question.getQuestion());
+
+        if(tempQuestion == null || tempQuestion.getIdquestions().equals(question.getIdquestions())){
+            return adminQuestionsRepository.save(question);
+        }
+
+        return null;
     }
 
     public boolean deleteQuestionFromDataBase(Question question) {
         adminQuestionsRepository.delete(question);
         return adminQuestionsRepository.findById(question.getIdquestions()).isEmpty();
-    }
-
-    public Question saveNewQuestionToDataBase(Question question) {
-        return adminQuestionsRepository.save(question);
     }
 }
