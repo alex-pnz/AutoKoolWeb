@@ -3,6 +3,9 @@
 .red {
   color: var(--lumo-error-text-color);
 }
+.green {
+  color: var(--lumo-success-text-color);
+}
 .admin-chart-hidden{
     visibility: hidden;
 }
