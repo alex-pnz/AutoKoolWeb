@@ -30,6 +30,7 @@ public class AdminUserNewForm extends FormLayout {
     ComboBox<User.Role> roleNew = new ComboBox<>("Роль");
     Button saveNew = new Button("Добавить");
     private User user;
+    Notification notification = new Notification();
     private static final Logger logger = LoggerFactory.getLogger(AdminUserNewForm.class);
     public AdminUserNewForm() {
 
@@ -71,6 +72,11 @@ public class AdminUserNewForm extends FormLayout {
             fireEvent(new AdminUserNewForm.SaveEvent(this, user));
         } catch (ValidationException e) {
             logger.error(e.getMessage());
+            Span red = new Span("Пользователь не сохранен!");
+            red.addClassName("red");
+            notification.close();
+            notification = new Notification(red);
+            notification.open();
         }
     }
 

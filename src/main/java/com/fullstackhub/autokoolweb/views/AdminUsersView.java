@@ -7,6 +7,8 @@ import com.storedobject.chart.*;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
@@ -27,7 +29,7 @@ public class AdminUsersView extends VerticalLayout {
     private SOChart soChart = new SOChart();
     private UserAdminViewIn userAdminViewIn;
     private final UserAdminViewService userAdminViewService;
-
+    Notification notification = new Notification();
     public AdminUsersView(UserAdminViewService userAdminViewService) {
         this.userAdminViewService = userAdminViewService;
         addClassName("admin-users-view");
@@ -90,16 +92,44 @@ public class AdminUsersView extends VerticalLayout {
 
     private User saveUser(AdminUserEditForm.SaveEvent event){
         logger.info("Editing: Selected User ID: {}", event.getUser().getId());
-        User user = userAdminViewService.saveUserToDataBase(event.getUser());
+        User savedUser = userAdminViewService.saveUserToDataBase(event.getUser());
+
+        if(savedUser == null) {
+            Span red = new Span("Не получилось сохранить пользователя!");
+            red.addClassName("red");
+            notification.close();
+            notification = new Notification(red);
+            notification.open();
+            return null;
+        }
+        Span green = new Span("Пользователь сохранен!");
+        green.addClassName("green");
+        notification.close();
+        notification = new Notification(green);
+        notification.open();
         reloadUsersTable();
-        return user;
+        return savedUser;
     }
 
     private User saveNewUser(AdminUserNewForm.SaveEvent event){
         logger.info("Saving New user: Username: {}", event.getUser().getUsername());
-        User user = userAdminViewService.saveNewUserToDataBase(event.getUser());
+        User savedUser = userAdminViewService.saveUserToDataBase(event.getUser());
+
+        if(savedUser == null) {
+            Span red = new Span("Не получилось сохранить пользователя!");
+            red.addClassName("red");
+            notification.close();
+            notification = new Notification(red);
+            notification.open();
+            return null;
+        }
+        Span green = new Span("Пользователь сохранен!");
+        green.addClassName("green");
+        notification.close();
+        notification = new Notification(green);
+        notification.open();
         reloadUsersTable();
-        return user;
+        return savedUser;
     }
 
 
@@ -130,6 +160,9 @@ public class AdminUsersView extends VerticalLayout {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        notification.close();
+        userEditForm.notification.close();
+        userNewForm.notification.close();
     }
 
     private void setChart(UserAdminViewIn userAdminViewIn){

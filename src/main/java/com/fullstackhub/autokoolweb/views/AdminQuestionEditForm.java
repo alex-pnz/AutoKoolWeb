@@ -37,7 +37,7 @@ public class AdminQuestionEditForm  extends FormLayout {
     Checkbox answer3 = new Checkbox();
     Button save = new Button("Изменить");
     Button delete = new Button("Удалить");
-
+    Notification notification = new Notification();
     private Question questionIn;
     private static final Logger logger = LoggerFactory.getLogger(AdminQuestionEditForm.class);
 
@@ -104,7 +104,9 @@ public class AdminQuestionEditForm  extends FormLayout {
         } catch (NullPointerException e){
             Span red = new Span("Выберите вопрос из списка!");
             red.addClassName("red");
-            new Notification(red).open();
+            notification.close();
+            notification = new Notification(red);
+            notification.open();
             logger.error(e.getMessage());
         } catch (ValidationException e) {
             logger.error(e.getMessage());
@@ -118,7 +120,9 @@ public class AdminQuestionEditForm  extends FormLayout {
         } catch (NullPointerException e){
             Span red = new Span("Выберите вопрос из списка!");
             red.addClassName("red");
-            new Notification(red).open();
+            notification.close();
+            notification = new Notification(red);
+            notification.open();
             logger.error(e.getMessage());
         } catch (ValidationException e) {
             logger.error(e.getMessage());

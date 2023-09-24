@@ -35,6 +35,7 @@ public class AdminQuestionsView extends VerticalLayout {
     private final QuestionAdminViewService questionAdminViewService;
     private Image image = new Image();
     private AdminQuestionEditForm questionEditForm;
+    private AdminQuestionNewForm questionNewForm;
     private static final Logger logger = LoggerFactory.getLogger(AdminQuestionsView.class);
     private Question question;
     MemoryBuffer memoryBuffer = new MemoryBuffer();
@@ -42,6 +43,7 @@ public class AdminQuestionsView extends VerticalLayout {
     private Button uploadButton = new Button("Добавить картинку...");
 
     private List<Question> questionsList = new ArrayList<>();
+    Notification notification = new Notification();
 
     public AdminQuestionsView(QuestionAdminViewService questionAdminViewService) {
         this.questionAdminViewService = questionAdminViewService;
@@ -82,7 +84,7 @@ public class AdminQuestionsView extends VerticalLayout {
         tabSheet.add("Редактировать вопрос",
                 new Div(setFormEditLayout()));
         tabSheet.add("Добавить новый воопрос",
-                new Div());
+                new Div(setFormNewLayout()));
 
         return tabSheet;
     }
@@ -93,6 +95,16 @@ public class AdminQuestionsView extends VerticalLayout {
         questionEditForm.addDeleteListener(this::deleteQuestion);
         HorizontalLayout horizontalLayout = new HorizontalLayout(questionEditForm, new VerticalLayout(image, upload));
         horizontalLayout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
+        return horizontalLayout;
+    }
+
+    private Component setFormNewLayout(){
+        questionNewForm = new AdminQuestionNewForm();
+        questionNewForm.addSaveListener(this::saveNewQuestion);
+
+        HorizontalLayout horizontalLayout = new HorizontalLayout(questionNewForm);
+        horizontalLayout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
+
         return horizontalLayout;
     }
 
@@ -134,7 +146,9 @@ public class AdminQuestionsView extends VerticalLayout {
 
             Span green = new Span("Вопрос удален!");
             green.addClassName("green");
-            new Notification(green).open();
+            notification.close();
+            notification = new Notification(green);
+            notification.open();
         }
 
         return deleted;
@@ -160,18 +174,55 @@ public class AdminQuestionsView extends VerticalLayout {
             } catch (IOException e) {
                 Span red = new Span("Не получилось сохранить файл!");
                 red.addClassName("red");
-                new Notification(red).open();
+                notification.close();
+                notification = new Notification(red);
+                notification.open();
                 logger.error(e.getMessage());
                 return null;
             }
         }
         Question savedQuestion = questionAdminViewService.saveQuestionToDataBase(currentQuestion);
+        if(savedQuestion == null) {
+            Span red = new Span("Не получилось сохранить вопрос!");
+            red.addClassName("red");
+            notification.close();
+            notification = new Notification(red);
+            notification.open();
+            return null;
+        }
         Span green = new Span("Вопрос сохранен!");
         green.addClassName("green");
-        new Notification(green).open();
+        notification.close();
+        notification = new Notification(green);
+        notification.open();
         reloadQuestionsTable();
         return savedQuestion;
     }
+
+
+    private Question saveNewQuestion(AdminQuestionNewForm.SaveEvent event) {
+        logger.info("Saving new question");
+        Question currentQuestion = event.getQuestion();
+
+        Question savedQuestion = questionAdminViewService.saveQuestionToDataBase(currentQuestion);
+        if(savedQuestion == null) {
+            Span red = new Span("Не получилось сохранить вопрос!");
+            red.addClassName("red");
+            notification.close();
+            notification = new Notification(red);
+            notification.open();
+            return null;
+        }
+        Span green = new Span("Вопрос сохранен!");
+        green.addClassName("green");
+        notification.close();
+        notification = new Notification(green);
+        notification.open();
+        reloadQuestionsTable();
+        return savedQuestion;
+    }
+
+
 
     private void reloadQuestionsTable() {
         questionsList = questionAdminViewService.getAll();
@@ -215,9 +266,10 @@ public class AdminQuestionsView extends VerticalLayout {
 
             memoryBuffer = new MemoryBuffer();
             upload.setReceiver(memoryBuffer);
-
+            notification.close();
+            questionEditForm.notification.close();
+            questionNewForm.notification.close();
         }
-
     }
 
 }
