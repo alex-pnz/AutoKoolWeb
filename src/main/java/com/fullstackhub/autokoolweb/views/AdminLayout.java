@@ -15,11 +15,11 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 /**
  * The main view is a top-level placeholder for other views.
  */
-public class MainLayout extends AppLayout {
+public class AdminLayout extends AppLayout {
 
     private H2 viewTitle;
 
-    public MainLayout() {
+    public AdminLayout() {
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
         addHeaderContent();

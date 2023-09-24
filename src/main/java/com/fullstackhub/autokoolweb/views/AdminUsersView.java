@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 @PageTitle("Autokool: Users")
-@Route(value = "admin-users", layout = MainLayout.class)
+@Route(value = "admin-users", layout = AdminLayout.class)
 public class AdminUsersView extends VerticalLayout {
     private Grid<UserAdminViewIn> usersTable = new Grid<>(UserAdminViewIn.class);
     private static final Logger logger = LoggerFactory.getLogger(AdminUsersView.class);

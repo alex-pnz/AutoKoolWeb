@@ -24,6 +24,9 @@ public class UserAdminViewService {
     }
 
     public User saveUserToDataBase(User user) {
+
+        //TODO check whether Username is unique and allow editing existing User
+
         return adminUsersRepository.save(user);
     }
 
