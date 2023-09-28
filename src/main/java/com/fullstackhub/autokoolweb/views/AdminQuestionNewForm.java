@@ -15,9 +15,6 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.shared.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +27,7 @@ public class AdminQuestionNewForm extends FormLayout {
     Checkbox answer1 = new Checkbox();
     Checkbox answer2 = new Checkbox();
     Checkbox answer3 = new Checkbox();
-    Button save = new Button("Изменить");
-    Button delete = new Button("Удалить");
+    Button save = new Button("Добавить");
     Notification notification = new Notification();
     private static final Logger logger = LoggerFactory.getLogger(AdminQuestionNewForm.class);
 
@@ -40,7 +36,6 @@ public class AdminQuestionNewForm extends FormLayout {
 
         add(
                 new VerticalLayout(
-                        question,
                         setOptions(),
                         setButtons()
                 )
@@ -52,13 +47,16 @@ public class AdminQuestionNewForm extends FormLayout {
     }
 
     private Component setOptions() {
+        HorizontalLayout horizontalLayout = new HorizontalLayout(question);
         HorizontalLayout horizontalLayout1 = new HorizontalLayout(option1, answer1);
         HorizontalLayout horizontalLayout2 = new HorizontalLayout(option2, answer2);
         HorizontalLayout horizontalLayout3 = new HorizontalLayout(option3, answer3);
         horizontalLayout1.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.BASELINE);
         horizontalLayout2.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.BASELINE);
         horizontalLayout3.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.BASELINE);
-        return new VerticalLayout(horizontalLayout1, horizontalLayout2, horizontalLayout3);
+        VerticalLayout verticalLayout = new VerticalLayout(horizontalLayout, horizontalLayout1, horizontalLayout2, horizontalLayout3);
+        verticalLayout.setClassName("vert-layout-margin");
+        return verticalLayout;
     }
 
     private Component setButtons() {
@@ -77,12 +75,14 @@ public class AdminQuestionNewForm extends FormLayout {
                 questionIn.setQuestion(question.getValue());
                 questionIn.setOption1(option1.getValue());
                 questionIn.setOption2(option2.getValue());
-                questionIn.setAnswer1(answer1.getValue()?1:0);
-                questionIn.setAnswer2(answer2.getValue()?1:0);
+                questionIn.setAnswer1(answer1.getValue() ? 1 : 0);
+                questionIn.setAnswer2(answer2.getValue() ? 1 : 0);
 
-                if(option3.getValue() != null){
+                if (option3.getValue() != null) {
                     questionIn.setOption3(option3.getValue());
-                    questionIn.setAnswer3(null);
+                    if (answer3.getValue()) {
+                        questionIn.setAnswer3(1);
+                    }
                 }
             }
 
@@ -118,5 +118,15 @@ public class AdminQuestionNewForm extends FormLayout {
 
     public Registration addSaveListener(ComponentEventListener<AdminQuestionNewForm.SaveEvent> listener) {
         return addListener(AdminQuestionNewForm.SaveEvent.class, listener);
+    }
+
+    public void clear() {
+        question.clear();
+        option1.clear();
+        option2.clear();
+        option3.clear();
+        answer1.clear();
+        answer2.clear();
+        answer3.clear();
     }
 }

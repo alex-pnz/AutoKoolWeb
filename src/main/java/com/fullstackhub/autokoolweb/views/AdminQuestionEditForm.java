@@ -25,7 +25,7 @@ import com.vaadin.flow.shared.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AdminQuestionEditForm  extends FormLayout {
+public class AdminQuestionEditForm extends FormLayout {
     Binder<Question> binder = new BeanValidationBinder<>(Question.class);
 
     TextField question = new TextField("Вопрос");
@@ -52,7 +52,6 @@ public class AdminQuestionEditForm  extends FormLayout {
         binder.forField(answer3).withConverter(i->i?1:0,i->i==1).bind(Question::getAnswer3,Question::setAnswer3);
         add(
                 new VerticalLayout(
-                        question,
                         setOptions(),
                         setButtons()
                 )
@@ -74,13 +73,16 @@ public class AdminQuestionEditForm  extends FormLayout {
     }
 
     private Component setOptions() {
+        HorizontalLayout horizontalLayout = new HorizontalLayout(question);
         HorizontalLayout horizontalLayout1 = new HorizontalLayout(option1, answer1);
         HorizontalLayout horizontalLayout2 = new HorizontalLayout(option2, answer2);
         HorizontalLayout horizontalLayout3 = new HorizontalLayout(option3, answer3);
         horizontalLayout1.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.BASELINE);
         horizontalLayout2.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.BASELINE);
         horizontalLayout3.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.BASELINE);
-        return new VerticalLayout(horizontalLayout1, horizontalLayout2, horizontalLayout3);
+        VerticalLayout verticalLayout = new VerticalLayout(horizontalLayout, horizontalLayout1, horizontalLayout2, horizontalLayout3);
+        verticalLayout.setClassName("vert-layout-margin");
+        return verticalLayout;
     }
 
     private Component setButtons() {
