@@ -20,6 +20,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.AbstractStreamResource;
 import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.server.StreamResourceWriter;
+import com.vaadin.flow.server.VaadinSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,13 +36,17 @@ public class AdminQuestionsView extends VerticalLayout {
     private Grid<Question> questionsTable = new Grid<>(Question.class);
     private final QuestionAdminViewService questionAdminViewService;
     private Image image = new Image();
+    private Image imageNew = new Image();
     private AdminQuestionEditForm questionEditForm;
     private AdminQuestionNewForm questionNewForm;
     private static final Logger logger = LoggerFactory.getLogger(AdminQuestionsView.class);
     private Question question;
     MemoryBuffer memoryBuffer = new MemoryBuffer();
+    MemoryBuffer memoryBufferNew = new MemoryBuffer();
     private Upload upload = new Upload(memoryBuffer);
+    private Upload uploadNew = new Upload(memoryBufferNew);
     private Button uploadButton = new Button("Добавить картинку...");
+    private Button uploadButtonNew = new Button("Добавить картинку...");
 
     private List<Question> questionsList = new ArrayList<>();
     Notification notification = new Notification();
@@ -54,6 +60,12 @@ public class AdminQuestionsView extends VerticalLayout {
         upload.setAcceptedFileTypes("application/jpg", ".jpg");
         uploadButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         upload.setUploadButton(uploadButton);
+
+        uploadNew.setMaxFiles(1);
+        uploadNew.setAcceptedFileTypes("application/jpg", ".jpg");
+        uploadButtonNew.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        upload.setUploadButton(uploadButtonNew);
+
         if (memoryBuffer.getFileData() == null) {
             upload.setVisible(false);
         }
@@ -63,6 +75,12 @@ public class AdminQuestionsView extends VerticalLayout {
 
             image.setSrc(createResource());
             image.setVisible(true);
+        });
+
+        uploadNew.addFinishedListener(e -> {
+            logger.info("MemoryBufferNew {}", memoryBufferNew.getFileName());
+
+            imageNew.setSrc(createResourceNew());
         });
 
         add(
@@ -76,6 +94,9 @@ public class AdminQuestionsView extends VerticalLayout {
 
     private AbstractStreamResource createResource() {
         return new StreamResource("img.jpg", () -> memoryBuffer.getInputStream());
+    }
+    private AbstractStreamResource createResourceNew() {
+        return new StreamResource("img.jpg", () -> memoryBufferNew.getInputStream());
     }
 
     private Component setTabs() {
@@ -102,7 +123,7 @@ public class AdminQuestionsView extends VerticalLayout {
         questionNewForm = new AdminQuestionNewForm();
         questionNewForm.addSaveListener(this::saveNewQuestion);
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout(questionNewForm);
+        HorizontalLayout horizontalLayout = new HorizontalLayout(questionNewForm, new VerticalLayout(imageNew, uploadNew));
         horizontalLayout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
 
         return horizontalLayout;
@@ -159,7 +180,7 @@ public class AdminQuestionsView extends VerticalLayout {
         Question currentQuestion = event.getQuestion();
         if (currentQuestion.getOption3() == null || currentQuestion.getOption3().isBlank()) {
 
-            logger.info("currentQuestion: Option Null or Empty");
+            logger.info("currentQuestion: Option3 Null or Empty");
             currentQuestion.setOption3(null);
             currentQuestion.setAnswer3(null);
         }
@@ -201,9 +222,32 @@ public class AdminQuestionsView extends VerticalLayout {
 
 
     private Question saveNewQuestion(AdminQuestionNewForm.SaveEvent event) {
-        logger.info("Saving new question");
+        logger.info("Saving: Selected Question ID: {}", event.getQuestion().getIdquestions());
         Question currentQuestion = event.getQuestion();
+        if (currentQuestion.getOption3() == null || currentQuestion.getOption3().isBlank()) {
 
+            logger.info("currentQuestion: Option3 Null or Empty");
+            currentQuestion.setOption3(null);
+            currentQuestion.setAnswer3(null);
+        }
+
+        if (!memoryBufferNew.getFileName().isBlank()) {
+            currentQuestion.setImage(memoryBufferNew.getFileName());
+            String path = String.format("C:/Users/Sasha/IdeaProjects/AutoKool/Images/%s", memoryBufferNew.getFileName());
+            logger.info("MemoryBuffer image name : {}", memoryBufferNew.getFileName());
+            File file = new File(path);
+            try (OutputStream output = new FileOutputStream(file, false)) {
+                memoryBufferNew.getInputStream().transferTo(output);
+            } catch (IOException e) {
+                Span red = new Span("Не получилось сохранить файл!");
+                red.addClassName("red");
+                notification.close();
+                notification = new Notification(red);
+                notification.open();
+                logger.error(e.getMessage());
+                return null;
+            }
+        }
         Question savedQuestion = questionAdminViewService.saveQuestionToDataBase(currentQuestion);
         if(savedQuestion == null) {
             Span red = new Span("Не получилось сохранить вопрос!");
@@ -219,6 +263,14 @@ public class AdminQuestionsView extends VerticalLayout {
         notification = new Notification(green);
         notification.open();
         reloadQuestionsTable();
+        questionNewForm.clear();
+
+        uploadNew.clearFileList();
+
+        memoryBufferNew = new MemoryBuffer();
+        uploadNew.setReceiver(memoryBufferNew);
+        questionsTable.getSelectionModel().select(questionsList.get(questionsList.size()-1));
+        questionsTable.scrollIntoView();
         return savedQuestion;
     }
 
