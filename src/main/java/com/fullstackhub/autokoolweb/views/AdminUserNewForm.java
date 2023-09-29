@@ -1,7 +1,7 @@
 package com.fullstackhub.autokoolweb.views;
 
-import com.fullstackhub.autokoolweb.dtos.UserAdminViewIn;
 import com.fullstackhub.autokoolweb.models.User;
+import com.fullstackhub.autokoolweb.services.NotificationService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -22,18 +22,20 @@ import com.vaadin.flow.shared.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
+
 public class AdminUserNewForm extends FormLayout {
     Binder<User> binder = new BeanValidationBinder<>(User.class);
 
-    TextField usernameNew = new TextField("Имя");
-    TextField passwordNew = new TextField("Пароль");
-    ComboBox<User.Role> roleNew = new ComboBox<>("Роль");
-    Button saveNew = new Button("Добавить");
+    TextField usernameNew = new TextField(ADMIN_USER_NAME);
+    TextField passwordNew = new TextField(ADMIN_USER_PASSWORD);
+    ComboBox<User.Role> roleNew = new ComboBox<>(ADMIN_USER_ROLE);
+    Button saveNew = new Button(ADMIN_USER_NEW_BUTTON);
     private User user;
-    Notification notification = new Notification();
     private static final Logger logger = LoggerFactory.getLogger(AdminUserNewForm.class);
-    public AdminUserNewForm() {
-
+    private final NotificationService notificationService;
+    public AdminUserNewForm(NotificationService notificationService) {
+        this.notificationService = notificationService;
         binder.forField(usernameNew).bind(User::getUsername, User::setUsername);
         binder.forField(passwordNew).bind(User::getPassword, User::setPassword);
         binder.forField(roleNew).bind(User::getRole, User::setRole);
@@ -72,11 +74,7 @@ public class AdminUserNewForm extends FormLayout {
             fireEvent(new AdminUserNewForm.SaveEvent(this, user));
         } catch (ValidationException e) {
             logger.error(e.getMessage());
-            Span red = new Span("Пользователь не сохранен!");
-            red.addClassName("red");
-            notification.close();
-            notification = new Notification(red);
-            notification.open();
+            notificationService.showNotification(NOTIFICATION_RED, ADMIN_USER_CANT_SAVE);
         }
     }
 
@@ -108,4 +106,8 @@ public class AdminUserNewForm extends FormLayout {
         return addListener(AdminUserNewForm.SaveEvent.class, listener);
     }
 
+    public void clear() {
+        usernameNew.clear();
+        passwordNew.clear();
+    }
 }

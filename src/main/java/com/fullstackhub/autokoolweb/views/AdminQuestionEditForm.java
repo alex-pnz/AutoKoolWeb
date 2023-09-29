@@ -1,8 +1,7 @@
 package com.fullstackhub.autokoolweb.views;
 
-import com.fullstackhub.autokoolweb.dtos.UserAdminViewIn;
 import com.fullstackhub.autokoolweb.models.Question;
-import com.fullstackhub.autokoolweb.models.User;
+import com.fullstackhub.autokoolweb.services.NotificationService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -11,13 +10,10 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
@@ -25,23 +21,25 @@ import com.vaadin.flow.shared.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
+
 public class AdminQuestionEditForm extends FormLayout {
     Binder<Question> binder = new BeanValidationBinder<>(Question.class);
 
-    TextField question = new TextField("Вопрос");
-    TextField option1 = new TextField("Вариант ответа 1");
-    TextField option2 = new TextField("Вариант ответа 2");
-    TextField option3 = new TextField("Вариант ответа 3");
+    TextField question = new TextField(ADMIN_QUESTION_FIELD);
+    TextField option1 = new TextField(ADMIN_QUESTION_OPTION1);
+    TextField option2 = new TextField(ADMIN_QUESTION_OPTION2);
+    TextField option3 = new TextField(ADMIN_QUESTION_OPTION3);
     Checkbox answer1 = new Checkbox();
     Checkbox answer2 = new Checkbox();
     Checkbox answer3 = new Checkbox();
-    Button save = new Button("Изменить");
-    Button delete = new Button("Удалить");
-    Notification notification = new Notification();
+    Button save = new Button(ADMIN_QUESTION_BUTTON_SAVE);
+    Button delete = new Button(ADMIN_QUESTION_BUTTON_DELETE);
     private Question questionIn;
     private static final Logger logger = LoggerFactory.getLogger(AdminQuestionEditForm.class);
-
-    public AdminQuestionEditForm() {
+    private final NotificationService notificationService;
+    public AdminQuestionEditForm(NotificationService notificationService) {
+        this.notificationService = notificationService;
         addClassName("admin-question-edit-form");
         binder.forField(question).bind(Question::getQuestion,Question::setQuestion);
         binder.forField(option1).bind(Question::getOption1,Question::setOption1);
@@ -104,11 +102,7 @@ public class AdminQuestionEditForm extends FormLayout {
             fireEvent(new AdminQuestionEditForm.DeleteEvent(this, questionIn));
 
         } catch (NullPointerException e){
-            Span red = new Span("Выберите вопрос из списка!");
-            red.addClassName("red");
-            notification.close();
-            notification = new Notification(red);
-            notification.open();
+            notificationService.showNotification(NOTIFICATION_RED, ADMIN_QUESTION_CHOOSE_QUESTION);
             logger.error(e.getMessage());
         } catch (ValidationException e) {
             logger.error(e.getMessage());
@@ -120,11 +114,7 @@ public class AdminQuestionEditForm extends FormLayout {
             binder.writeBean(questionIn);
             fireEvent(new AdminQuestionEditForm.SaveEvent(this, questionIn));
         } catch (NullPointerException e){
-            Span red = new Span("Выберите вопрос из списка!");
-            red.addClassName("red");
-            notification.close();
-            notification = new Notification(red);
-            notification.open();
+            notificationService.showNotification(NOTIFICATION_RED, ADMIN_QUESTION_CHOOSE_QUESTION);
             logger.error(e.getMessage());
         } catch (ValidationException e) {
             logger.error(e.getMessage());

@@ -2,6 +2,7 @@ package com.fullstackhub.autokoolweb.views;
 
 import com.fullstackhub.autokoolweb.dtos.UserAdminViewIn;
 import com.fullstackhub.autokoolweb.models.User;
+import com.fullstackhub.autokoolweb.services.NotificationService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -22,23 +23,25 @@ import com.vaadin.flow.shared.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
+
 public class AdminUserEditForm extends FormLayout {
     Binder<UserAdminViewIn> binder = new BeanValidationBinder<>(UserAdminViewIn.class);
 
-    TextField username = new TextField("Имя");
-    TextField password = new TextField("Пароль");
-    ComboBox<User.Role> role = new ComboBox<>("Роль");
-    Button save = new Button("Изменить");
-    Button delete = new Button("Удалить");
+    TextField username = new TextField(ADMIN_USER_NAME);
+    TextField password = new TextField(ADMIN_USER_PASSWORD);
+    ComboBox<User.Role> role = new ComboBox<>(ADMIN_USER_ROLE);
+    Button save = new Button(ADMIN_USER_BUTTON_CHANGE);
+    Button delete = new Button(ADMIN_USER_BUTTON_DELETE);
     private UserAdminViewIn userAdminViewIn;
     private static final Logger logger = LoggerFactory.getLogger(AdminUserEditForm.class);
-    Notification notification = new Notification();
-    public AdminUserEditForm() {
+    private final NotificationService notificationService;
+    public AdminUserEditForm(NotificationService notificationService) {
+        this.notificationService = notificationService;
         addClassName("admin-user-edit-form");
         binder.bindInstanceFields(this);
         role.setItems(User.Role.values());
         role.setItemLabelGenerator(User.Role::name);
-
         add(
                 new VerticalLayout(
                         username,
@@ -47,16 +50,13 @@ public class AdminUserEditForm extends FormLayout {
                         setButtons()
                 )
         );
-
         username.setClassName("user-edit");
         password.setClassName("user-edit");
     }
 
     public void setUserEditFields(UserAdminViewIn userAdminViewIn){
-
         this.userAdminViewIn = userAdminViewIn;
         binder.readBean(userAdminViewIn);
-
     }
 
     private Component setButtons() {
@@ -77,11 +77,7 @@ public class AdminUserEditForm extends FormLayout {
             binder.writeBean(userAdminViewIn);
             fireEvent(new DeleteEvent(this, userAdminViewIn));
         } catch (NullPointerException e){
-            Span red = new Span("Выберите студента из списка!");
-            red.addClassName("red");
-            notification.close();
-            notification = new Notification(red);
-            notification.open();
+            notificationService.showNotification(NOTIFICATION_RED, ADMIN_USER_CHOOSE_STUDENT);
             logger.error(e.getMessage());
         } catch (ValidationException e) {
             logger.error(e.getMessage());
@@ -93,11 +89,7 @@ public class AdminUserEditForm extends FormLayout {
             binder.writeBean(userAdminViewIn);
             fireEvent(new SaveEvent(this, userAdminViewIn));
         } catch (NullPointerException e){
-            Span red = new Span("Выберите студента из списка!");
-            red.addClassName("red");
-            notification.close();
-            notification = new Notification(red);
-            notification.open();
+            notificationService.showNotification(NOTIFICATION_RED, ADMIN_USER_CHOOSE_STUDENT);
             logger.error(e.getMessage());
         } catch (ValidationException e) {
             logger.error(e.getMessage());

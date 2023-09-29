@@ -2,13 +2,12 @@ package com.fullstackhub.autokoolweb.views;
 
 import com.fullstackhub.autokoolweb.dtos.UserAdminViewIn;
 import com.fullstackhub.autokoolweb.models.User;
+import com.fullstackhub.autokoolweb.services.NotificationService;
 import com.fullstackhub.autokoolweb.services.UserAdminViewService;
 import com.storedobject.chart.*;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
@@ -19,8 +18,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-@PageTitle("Autokool: Users")
-@Route(value = "admin-users", layout = AdminLayout.class)
+import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
+
+@PageTitle(ADMIN_USERS_TITLE)
+@Route(value = ADMIN_USERS_URL, layout = AdminLayout.class)
 public class AdminUsersView extends VerticalLayout {
     private Grid<UserAdminViewIn> usersTable = new Grid<>(UserAdminViewIn.class);
     private static final Logger logger = LoggerFactory.getLogger(AdminUsersView.class);
@@ -29,9 +30,11 @@ public class AdminUsersView extends VerticalLayout {
     private SOChart soChart = new SOChart();
     private UserAdminViewIn userAdminViewIn;
     private final UserAdminViewService userAdminViewService;
-    Notification notification = new Notification();
-    public AdminUsersView(UserAdminViewService userAdminViewService) {
+    private final NotificationService notificationService;
+    public AdminUsersView(UserAdminViewService userAdminViewService,
+                          NotificationService notificationService) {
         this.userAdminViewService = userAdminViewService;
+        this.notificationService = notificationService;
         addClassName("admin-users-view");
         setSizeFull();
         setGrid();
@@ -47,9 +50,9 @@ public class AdminUsersView extends VerticalLayout {
     private Component setTabs() {
         TabSheet tabSheet = new TabSheet();
 
-        tabSheet.add("Редактировать данные студента",
+        tabSheet.add(ADMIN_USERS_EDIT,
                 new Div(setFormEditLayout()));
-        tabSheet.add("Добавить нового студента",
+        tabSheet.add(ADMIN_USERS_NEW,
                 new Div(setFormNewLayout()));
         
         return tabSheet;
@@ -62,7 +65,7 @@ public class AdminUsersView extends VerticalLayout {
     }
 
     private Component setFormEditLayout(){
-        userEditForm = new AdminUserEditForm();
+        userEditForm = new AdminUserEditForm(notificationService);
         userEditForm.addSaveListener(this::saveUser);
         userEditForm.addDeleteListener(this::deleteUser);
         setChart(userAdminViewIn);
@@ -74,7 +77,7 @@ public class AdminUsersView extends VerticalLayout {
     }
 
     private Component setFormNewLayout(){
-        userNewForm = new AdminUserNewForm();
+        userNewForm = new AdminUserNewForm(notificationService);
         userNewForm.addSaveListener(this::saveNewUser);
 
         HorizontalLayout horizontalLayout = new HorizontalLayout(userNewForm);
@@ -95,18 +98,10 @@ public class AdminUsersView extends VerticalLayout {
         User savedUser = userAdminViewService.saveUserToDataBase(event.getUser());
 
         if(savedUser == null) {
-            Span red = new Span("Не получилось сохранить пользователя!");
-            red.addClassName("red");
-            notification.close();
-            notification = new Notification(red);
-            notification.open();
+            notificationService.showNotification(NOTIFICATION_RED, ADMIN_USER_CANT_SAVE);
             return null;
         }
-        Span green = new Span("Пользователь сохранен!");
-        green.addClassName("green");
-        notification.close();
-        notification = new Notification(green);
-        notification.open();
+        notificationService.showNotification(NOTIFICATION_GREEN, ADMIN_USERS_SAVED);
         reloadUsersTable();
         return savedUser;
     }
@@ -116,18 +111,11 @@ public class AdminUsersView extends VerticalLayout {
         User savedUser = userAdminViewService.saveUserToDataBase(event.getUser());
 
         if(savedUser == null) {
-            Span red = new Span("Не получилось сохранить пользователя!");
-            red.addClassName("red");
-            notification.close();
-            notification = new Notification(red);
-            notification.open();
+            notificationService.showNotification(NOTIFICATION_RED, ADMIN_USER_CANT_SAVE);
             return null;
         }
-        Span green = new Span("Пользователь сохранен!");
-        green.addClassName("green");
-        notification.close();
-        notification = new Notification(green);
-        notification.open();
+        notificationService.showNotification(NOTIFICATION_GREEN, ADMIN_USERS_SAVED);
+        userNewForm.clear();
         reloadUsersTable();
         return savedUser;
     }
@@ -160,9 +148,6 @@ public class AdminUsersView extends VerticalLayout {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        notification.close();
-        userEditForm.notification.close();
-        userNewForm.notification.close();
     }
 
     private void setChart(UserAdminViewIn userAdminViewIn){
@@ -186,8 +171,6 @@ public class AdminUsersView extends VerticalLayout {
         bc.plotOn(rc);
         bc.setName("");
         soChart.add(bc);
-
-
     }
 
 }

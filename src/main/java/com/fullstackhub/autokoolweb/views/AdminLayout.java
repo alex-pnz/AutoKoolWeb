@@ -12,6 +12,8 @@ import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
+import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
+
 /**
  * The main view is a top-level placeholder for other views.
  */
@@ -36,7 +38,7 @@ public class AdminLayout extends AppLayout {
     }
 
     private void addDrawerContent() {
-        H1 appName = new H1("AutoKoolWeb");
+        H1 appName = new H1(ADMIN_LAYOUT_H1);
         appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
         Header header = new Header(appName);
 
@@ -48,8 +50,8 @@ public class AdminLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
-        nav.addItem(new SideNavItem("Users", AdminUsersView.class));
-        nav.addItem(new SideNavItem("Questions", AdminQuestionsView.class));
+        nav.addItem(new SideNavItem(ADMIN_LAYOUT_SIDENAV_USERS, AdminUsersView.class));
+        nav.addItem(new SideNavItem(ADMIN_LAYOUT_SIDENAV_QUESTIONS, AdminQuestionsView.class));
 
         return nav;
     }

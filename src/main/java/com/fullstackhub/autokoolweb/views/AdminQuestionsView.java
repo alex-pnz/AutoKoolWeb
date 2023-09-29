@@ -1,6 +1,7 @@
 package com.fullstackhub.autokoolweb.views;
 
 import com.fullstackhub.autokoolweb.models.Question;
+import com.fullstackhub.autokoolweb.services.NotificationService;
 import com.fullstackhub.autokoolweb.services.QuestionAdminViewService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -9,8 +10,6 @@ import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
@@ -20,8 +19,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.AbstractStreamResource;
 import com.vaadin.flow.server.StreamResource;
-import com.vaadin.flow.server.StreamResourceWriter;
-import com.vaadin.flow.server.VaadinSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +26,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@PageTitle("Autokool: Questions")
-@Route(value = "admin-questions", layout = AdminLayout.class)
+import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
+
+@PageTitle(ADMIN_QUESTIONS_TITLE)
+@Route(value = ADMIN_QUESTIONS_URL, layout = AdminLayout.class)
 public class AdminQuestionsView extends VerticalLayout {
 
     private Grid<Question> questionsTable = new Grid<>(Question.class);
@@ -45,14 +44,16 @@ public class AdminQuestionsView extends VerticalLayout {
     MemoryBuffer memoryBufferNew = new MemoryBuffer();
     private Upload upload = new Upload(memoryBuffer);
     private Upload uploadNew = new Upload(memoryBufferNew);
-    private Button uploadButton = new Button("Добавить картинку...");
-    private Button uploadButtonNew = new Button("Добавить картинку...");
+    private Button uploadButton = new Button(ADMIN_QUESTIONS_ADD_IMAGE);
+    private Button uploadButtonNew = new Button(ADMIN_QUESTIONS_ADD_IMAGE);
 
     private List<Question> questionsList = new ArrayList<>();
-    Notification notification = new Notification();
+    private final NotificationService notificationService;
 
-    public AdminQuestionsView(QuestionAdminViewService questionAdminViewService) {
+    public AdminQuestionsView(QuestionAdminViewService questionAdminViewService,
+                              NotificationService notificationService) {
         this.questionAdminViewService = questionAdminViewService;
+        this.notificationService = notificationService;
         addClassName("admin-questions-view");
         setSizeFull();
         setGrid();
@@ -65,31 +66,25 @@ public class AdminQuestionsView extends VerticalLayout {
         uploadNew.setAcceptedFileTypes("application/jpg", ".jpg");
         uploadButtonNew.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         uploadNew.setUploadButton(uploadButtonNew);
-
         if (memoryBuffer.getFileData() == null) {
             upload.setVisible(false);
         }
-
         upload.addFinishedListener(e -> {
             logger.info("MemoryBuffer {}", memoryBuffer.getFileName());
 
             image.setSrc(createResource());
             image.setVisible(true);
         });
-
         uploadNew.addFinishedListener(e -> {
             logger.info("MemoryBufferNew {}", memoryBufferNew.getFileName());
 
             imageNew.setSrc(createResourceNew());
         });
-
         add(
                 questionsTable,
                 setTabs()
         );
-
         reloadQuestionsTable();
-
     }
 
     private AbstractStreamResource createResource() {
@@ -102,16 +97,16 @@ public class AdminQuestionsView extends VerticalLayout {
     private Component setTabs() {
         TabSheet tabSheet = new TabSheet();
 
-        tabSheet.add("Редактировать вопрос",
+        tabSheet.add(ADMIN_QUESTIONS_TAB1,
                 new Div(setFormEditLayout()));
-        tabSheet.add("Добавить новый воопрос",
+        tabSheet.add(ADMIN_QUESTIONS_TAB2,
                 new Div(setFormNewLayout()));
 
         return tabSheet;
     }
 
     private Component setFormEditLayout() {
-        questionEditForm = new AdminQuestionEditForm();
+        questionEditForm = new AdminQuestionEditForm(notificationService);
         questionEditForm.addSaveListener(this::saveQuestion);
         questionEditForm.addDeleteListener(this::deleteQuestion);
         HorizontalLayout horizontalLayout = new HorizontalLayout(questionEditForm, new VerticalLayout(image, upload));
@@ -120,7 +115,7 @@ public class AdminQuestionsView extends VerticalLayout {
     }
 
     private Component setFormNewLayout(){
-        questionNewForm = new AdminQuestionNewForm();
+        questionNewForm = new AdminQuestionNewForm(notificationService);
         questionNewForm.addSaveListener(this::saveNewQuestion);
 
         HorizontalLayout horizontalLayout = new HorizontalLayout(questionNewForm, new VerticalLayout(imageNew, uploadNew));
@@ -130,8 +125,7 @@ public class AdminQuestionsView extends VerticalLayout {
     }
 
     private void setImage(Question question) {
-//        String path = String.format("themes/autokoolweb/images/%s", question.getImage());
-        String path = String.format("C:/Users/Sasha/IdeaProjects/AutoKool/Images/%s", question.getImage());
+        String path = String.format(IMAGE_FOLDER_PATH, question.getImage());
 
         StreamResource imageResource = new StreamResource("MyResourceName", () -> {
             try {
@@ -154,7 +148,7 @@ public class AdminQuestionsView extends VerticalLayout {
 
         if(deleted){
             if (event.getQuestion().getImage() != null){
-                String path = String.format("C:/Users/Sasha/IdeaProjects/AutoKool/Images/%s", tempQuestion.getImage());
+                String path = String.format(IMAGE_FOLDER_PATH, tempQuestion.getImage());
                 File file = new File(path);
                 file.delete();
             }
@@ -165,11 +159,7 @@ public class AdminQuestionsView extends VerticalLayout {
                 questionsTable.getSelectionModel().select(questionsList.get(questionsList.size()-1));
             }
 
-            Span green = new Span("Вопрос удален!");
-            green.addClassName("green");
-            notification.close();
-            notification = new Notification(green);
-            notification.open();
+            notificationService.showNotification(NOTIFICATION_GREEN, ADMIN_QUESTIONS_DELETE);
         }
 
         return deleted;
@@ -187,35 +177,23 @@ public class AdminQuestionsView extends VerticalLayout {
 
         if (!memoryBuffer.getFileName().isBlank()) {
             currentQuestion.setImage(memoryBuffer.getFileName());
-            String path = String.format("C:/Users/Sasha/IdeaProjects/AutoKool/Images/%s", memoryBuffer.getFileName());
+            String path = String.format(IMAGE_FOLDER_PATH, memoryBuffer.getFileName());
             logger.info("MemoryBuffer image name : {}", memoryBuffer.getFileName());
             File file = new File(path);
             try (OutputStream output = new FileOutputStream(file, false)) {
                 memoryBuffer.getInputStream().transferTo(output);
             } catch (IOException e) {
-                Span red = new Span("Не получилось сохранить файл!");
-                red.addClassName("red");
-                notification.close();
-                notification = new Notification(red);
-                notification.open();
+                notificationService.showNotification(NOTIFICATION_RED, ADMIN_QUESTIONS_CANT_SAVE);
                 logger.error(e.getMessage());
                 return null;
             }
         }
         Question savedQuestion = questionAdminViewService.saveQuestionToDataBase(currentQuestion);
         if(savedQuestion == null) {
-            Span red = new Span("Не получилось сохранить вопрос!");
-            red.addClassName("red");
-            notification.close();
-            notification = new Notification(red);
-            notification.open();
+            notificationService.showNotification(NOTIFICATION_RED, ADMIN_QUESTIONS_CANT_SAVE);
             return null;
         }
-        Span green = new Span("Вопрос сохранен!");
-        green.addClassName("green");
-        notification.close();
-        notification = new Notification(green);
-        notification.open();
+        notificationService.showNotification(NOTIFICATION_GREEN, ADMIN_QUESTIONS_SAVED);
         reloadQuestionsTable();
         return savedQuestion;
     }
@@ -233,35 +211,23 @@ public class AdminQuestionsView extends VerticalLayout {
 
         if (!memoryBufferNew.getFileName().isBlank()) {
             currentQuestion.setImage(memoryBufferNew.getFileName());
-            String path = String.format("C:/Users/Sasha/IdeaProjects/AutoKool/Images/%s", memoryBufferNew.getFileName());
+            String path = String.format(IMAGE_FOLDER_PATH, memoryBufferNew.getFileName());
             logger.info("MemoryBuffer image name : {}", memoryBufferNew.getFileName());
             File file = new File(path);
             try (OutputStream output = new FileOutputStream(file, false)) {
                 memoryBufferNew.getInputStream().transferTo(output);
             } catch (IOException e) {
-                Span red = new Span("Не получилось сохранить файл!");
-                red.addClassName("red");
-                notification.close();
-                notification = new Notification(red);
-                notification.open();
+                notificationService.showNotification(NOTIFICATION_RED, ADMIN_QUESTIONS_CANT_SAVE);
                 logger.error(e.getMessage());
                 return null;
             }
         }
         Question savedQuestion = questionAdminViewService.saveQuestionToDataBase(currentQuestion);
         if(savedQuestion == null) {
-            Span red = new Span("Не получилось сохранить вопрос!");
-            red.addClassName("red");
-            notification.close();
-            notification = new Notification(red);
-            notification.open();
+            notificationService.showNotification(NOTIFICATION_RED, ADMIN_QUESTIONS_CANT_SAVE_QUESTION);
             return null;
         }
-        Span green = new Span("Вопрос сохранен!");
-        green.addClassName("green");
-        notification.close();
-        notification = new Notification(green);
-        notification.open();
+        notificationService.showNotification(NOTIFICATION_GREEN, ADMIN_QUESTIONS_SAVED);
 
         questionNewForm.clear();
 
@@ -319,9 +285,6 @@ public class AdminQuestionsView extends VerticalLayout {
 
             memoryBuffer = new MemoryBuffer();
             upload.setReceiver(memoryBuffer);
-            notification.close();
-            questionEditForm.notification.close();
-            questionNewForm.notification.close();
         }
     }
 
