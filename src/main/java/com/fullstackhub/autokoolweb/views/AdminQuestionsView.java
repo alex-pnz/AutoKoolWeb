@@ -64,7 +64,7 @@ public class AdminQuestionsView extends VerticalLayout {
         uploadNew.setMaxFiles(1);
         uploadNew.setAcceptedFileTypes("application/jpg", ".jpg");
         uploadButtonNew.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        upload.setUploadButton(uploadButtonNew);
+        uploadNew.setUploadButton(uploadButtonNew);
 
         if (memoryBuffer.getFileData() == null) {
             upload.setVisible(false);
@@ -262,15 +262,16 @@ public class AdminQuestionsView extends VerticalLayout {
         notification.close();
         notification = new Notification(green);
         notification.open();
-        reloadQuestionsTable();
+
         questionNewForm.clear();
 
         uploadNew.clearFileList();
 
         memoryBufferNew = new MemoryBuffer();
         uploadNew.setReceiver(memoryBufferNew);
+        reloadQuestionsTable();
         questionsTable.getSelectionModel().select(questionsList.get(questionsList.size()-1));
-        questionsTable.scrollIntoView();
+        questionsTable.scrollToEnd();
         return savedQuestion;
     }
 

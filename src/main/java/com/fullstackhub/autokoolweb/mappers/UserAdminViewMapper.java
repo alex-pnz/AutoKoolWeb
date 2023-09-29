@@ -26,4 +26,13 @@ public class UserAdminViewMapper {
         return userAdminViewIn;
     }
 
+    public User fomDto(UserAdminViewIn userAdminViewIn) {
+        User user = new User();
+        user.setId(userAdminViewIn.getId());
+        user.setUsername(userAdminViewIn.getUsername());
+        user.setPassword(userAdminViewIn.getPassword());
+        user.setRole(userAdminViewIn.getRole());
+        return user;
+    }
+
 }
