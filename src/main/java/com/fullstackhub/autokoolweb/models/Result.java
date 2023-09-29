@@ -10,7 +10,7 @@ import java.util.Objects;
 @Table(name="results")
 public class Result {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Integer id;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
@@ -24,6 +24,11 @@ public class Result {
 
     public Result(Integer id, User user, Integer result) {
         this.id = id;
+        this.user = user;
+        this.result = result;
+    }
+
+    public Result(User user, Integer result) {
         this.user = user;
         this.result = result;
     }

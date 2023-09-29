@@ -21,3 +21,45 @@
 .vert-layout-margin{
     padding-left: 0px;
 }
+
+.user-view-left-side{
+    background-image: linear-gradient(to right top, #20b160, #21b55e, #22b95b, #24bc58, #27c055);
+    border-radius: 10px;
+    color: white;
+    height: 50em;
+}
+
+.exam-area{
+    background-image: linear-gradient(to right top, #20b160, #21b55e, #22b95b, #24bc58, #27c055);
+    height: 50em;
+}
+
+.label-stat{
+    text-decoration: underline;
+}
+
+.user-hr{
+    border-top: 1px solid white;
+}
+
+.chart-user-view{
+    margin-top: 30px;
+}
+
+.user-view-button{
+    color: #d9fae4;
+    background: #63cf87;
+
+}
+
+.user-view-buttons{
+    margin: auto;
+}
+
+.user-view-question-text {
+    width: fit-content;
+}
+
+.next-button {
+    margin-right: 90%;
+}
