@@ -36,8 +36,8 @@ import java.util.List;
 
 import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
 
-@PageTitle("Autokool: User")
-@Route(value = "")
+@PageTitle(USER_VIEW_TITLE)
+@Route(value = USER_VIEW_URL)
 public class UserView extends HorizontalLayout {
     private final AdminUsersRepository adminUsersRepository;
     private final AdminQuestionsRepository adminQuestionsRepository;
