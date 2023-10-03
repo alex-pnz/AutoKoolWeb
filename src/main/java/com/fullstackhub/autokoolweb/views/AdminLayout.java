@@ -2,15 +2,19 @@ package com.fullstackhub.autokoolweb.views;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.fullstackhub.autokoolweb.security.SecurityService;
 
 import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
 
@@ -18,10 +22,15 @@ import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
  * The main view is a top-level placeholder for other views.
  */
 public class AdminLayout extends AppLayout {
-
+    private final SecurityService securityService;
+    Button exit = new Button(BUTTON_EXIT);
     private H2 viewTitle;
 
-    public AdminLayout() {
+    public AdminLayout(SecurityService securityService) {
+        this.securityService = securityService;
+
+        exit.addClickListener(e->securityService.logout());
+
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
         addHeaderContent();
@@ -32,16 +41,18 @@ public class AdminLayout extends AppLayout {
         toggle.setAriaLabel("Menu toggle");
 
         viewTitle = new H2();
+        viewTitle.setWidthFull();
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
-
-        addToNavbar(true, toggle, viewTitle);
+        exit.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        HorizontalLayout hl = new HorizontalLayout(exit);
+        hl.setWidth("100px");
+        addToNavbar(true, toggle, viewTitle, hl);
     }
 
     private void addDrawerContent() {
         H1 appName = new H1(ADMIN_LAYOUT_H1);
         appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
         Header header = new Header(appName);
-
         Scroller scroller = new Scroller(createNavigation());
 
         addToDrawer(header, scroller, createFooter());
