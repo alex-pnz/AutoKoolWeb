@@ -19,6 +19,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.AbstractStreamResource;
 import com.vaadin.flow.server.StreamResource;
+import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,7 @@ import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
 
 @PageTitle(ADMIN_QUESTIONS_TITLE)
 @Route(value = ADMIN_QUESTIONS_URL, layout = AdminLayout.class)
+@RolesAllowed("ADMIN")
 public class AdminQuestionsView extends VerticalLayout {
 
     private Grid<Question> questionsTable = new Grid<>(Question.class);

@@ -6,8 +6,9 @@ import com.fullstackhub.autokoolweb.models.Question;
 import com.fullstackhub.autokoolweb.models.Result;
 import com.fullstackhub.autokoolweb.models.User;
 import com.fullstackhub.autokoolweb.repositories.AdminQuestionsRepository;
-import com.fullstackhub.autokoolweb.repositories.AdminUsersRepository;
+import com.fullstackhub.autokoolweb.repositories.UsersRepository;
 import com.fullstackhub.autokoolweb.services.NotificationService;
+import com.fullstackhub.autokoolweb.security.SecurityService;
 import com.fullstackhub.autokoolweb.services.UserResultsService;
 import com.storedobject.chart.*;
 import com.vaadin.flow.component.Key;
@@ -25,6 +26,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
+import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,12 +40,14 @@ import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
 
 @PageTitle(USER_VIEW_TITLE)
 @Route(value = USER_VIEW_URL)
+@RolesAllowed("USER")
 public class UserView extends HorizontalLayout {
-    private final AdminUsersRepository adminUsersRepository;
+    private final UsersRepository usersRepository;
     private final AdminQuestionsRepository adminQuestionsRepository;
     private final UserAdminViewMapper userAdminViewMapper;
     private final UserResultsService userResultsService;
     private final NotificationService notificationService;
+    private final SecurityService securityService;
     private Span labelId = new Span(LABEL_ID);
     private Span textId = new Span();
     private Span labelName = new Span(LABEL_NAME);
@@ -82,16 +86,18 @@ public class UserView extends HorizontalLayout {
     private VerticalLayout examArea = new VerticalLayout();
     private static final Logger logger = LoggerFactory.getLogger(UserView.class);
 
-    public UserView(AdminUsersRepository adminUsersRepository,
+    public UserView(UsersRepository usersRepository,
                     UserAdminViewMapper userAdminViewMapper,
                     AdminQuestionsRepository adminQuestionsRepository,
                     UserResultsService userResultsService,
-                    NotificationService notificationService) {
-        this.adminUsersRepository = adminUsersRepository;
+                    NotificationService notificationService,
+                    SecurityService securityService) {
+        this.usersRepository = usersRepository;
         this.userAdminViewMapper = userAdminViewMapper;
         this.adminQuestionsRepository = adminQuestionsRepository;
         this.userResultsService = userResultsService;
         this.notificationService = notificationService;
+        this.securityService = securityService;
         setExamArea();
         examArea.setVisible(false);
         setUser();
@@ -114,6 +120,9 @@ public class UserView extends HorizontalLayout {
                 logger.info("Question list: EMPTY; check DB");
             }
         });
+
+        exit.addClickListener(e -> securityService.logout());
+
         start.addClickShortcut(Key.ENTER);
         buttonCheck.addClickListener(e -> {
 
@@ -248,7 +257,7 @@ public class UserView extends HorizontalLayout {
     }
 
     private boolean setUser() {
-        User user = adminUsersRepository.findByUsername("zack");
+        User user = usersRepository.findByUsername(securityService.getLoggedUser());
         if (user != null) {
             userDTO = userAdminViewMapper.toDto(user);
             return true;

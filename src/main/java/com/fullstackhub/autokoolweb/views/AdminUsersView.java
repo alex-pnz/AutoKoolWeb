@@ -13,6 +13,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +24,7 @@ import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
 
 @PageTitle(ADMIN_USERS_TITLE)
 @Route(value = ADMIN_USERS_URL, layout = AdminLayout.class)
+@RolesAllowed({"ADMIN"})
 public class AdminUsersView extends VerticalLayout {
     private Grid<UserAdminViewIn> usersTable = new Grid<>(UserAdminViewIn.class);
     private static final Logger logger = LoggerFactory.getLogger(AdminUsersView.class);

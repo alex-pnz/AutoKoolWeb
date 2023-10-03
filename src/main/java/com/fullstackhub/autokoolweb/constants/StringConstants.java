@@ -5,9 +5,12 @@ public class StringConstants {
     public static final String NOTIFICATION_RED = "red";
     public static final String NOTIFICATION_GREEN = "green";
 
+    // LoginView
+    public static final String LOGIN_VIEW_URL = "login";
+
     // UserView
     public static final String USER_VIEW_TITLE = "Autokool: User";
-    public static final String USER_VIEW_URL = "";
+    public static final String USER_VIEW_URL = "user";
     public static final String CHOOSE_ANSWER = "Выберите ответ!";
     public static final String EXAM_INTERRUPTED = "Экзамен прерван!";
     public static final String EXAM_PASSED = "Экзамен сдан успешно!";
