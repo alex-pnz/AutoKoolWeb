@@ -18,10 +18,20 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 @Configuration
 public class SecurityConfiguration extends VaadinWebSecurity {
 
+    private final UserAuthenticationSuccessHandler successHandler;
+
+    public SecurityConfiguration(UserAuthenticationSuccessHandler successHandler) {
+        this.successHandler = successHandler;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
         setLoginView(http, LoginView.class);
+
+        http.formLogin(form ->
+                form.successHandler(successHandler));
+
     }
 
 
