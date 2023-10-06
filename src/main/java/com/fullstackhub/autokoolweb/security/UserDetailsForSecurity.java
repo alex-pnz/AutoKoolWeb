@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserDetailsForSecurity implements UserDetailsService {
-    private static final Logger logger = LoggerFactory.getLogger(UserView.class);
     @Autowired
     private UsersRepository usersRepository;
 
