@@ -2,9 +2,8 @@ package com.fullstackhub.autokoolweb.services;
 
 import com.fullstackhub.autokoolweb.dtos.UserAdminViewIn;
 import com.fullstackhub.autokoolweb.mappers.UserAdminViewMapper;
-import com.fullstackhub.autokoolweb.models.Question;
 import com.fullstackhub.autokoolweb.models.User;
-import com.fullstackhub.autokoolweb.repositories.AdminUsersRepository;
+import com.fullstackhub.autokoolweb.repositories.UsersRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,23 +12,23 @@ import java.util.List;
 public class UserAdminViewService {
 
     private final UserAdminViewMapper userAdminViewMapper;
-    private final AdminUsersRepository adminUsersRepository;
+    private final UsersRepository usersRepository;
 
-    public UserAdminViewService(UserAdminViewMapper userAdminViewMapper, AdminUsersRepository adminUsersRepository) {
+    public UserAdminViewService(UserAdminViewMapper userAdminViewMapper, UsersRepository usersRepository) {
         this.userAdminViewMapper = userAdminViewMapper;
-        this.adminUsersRepository = adminUsersRepository;
+        this.usersRepository = usersRepository;
     }
 
     public List<UserAdminViewIn> getAllDto() {
-        return adminUsersRepository.findAll().stream().map(userAdminViewMapper::toDto).toList();
+        return usersRepository.findAll().stream().map(userAdminViewMapper::toDto).toList();
     }
 
     public User saveUserToDataBase(User user) {
 
-        User tempUser = adminUsersRepository.findByUsername(user.getUsername());
+        User tempUser = usersRepository.findByUsername(user.getUsername());
 
         if(tempUser == null || tempUser.getId().equals(user.getId())){
-            return adminUsersRepository.save(user);
+            return usersRepository.save(user);
         }
 
         return null;
@@ -37,8 +36,8 @@ public class UserAdminViewService {
     }
 
     public boolean deleteUserToDataBase(User user) {
-        adminUsersRepository.delete(user);
-        return adminUsersRepository.findById(user.getId()).isEmpty();
+        usersRepository.delete(user);
+        return usersRepository.findById(user.getId()).isEmpty();
     }
 
 }

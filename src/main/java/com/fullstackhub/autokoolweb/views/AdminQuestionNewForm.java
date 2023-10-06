@@ -1,6 +1,7 @@
 package com.fullstackhub.autokoolweb.views;
 
 import com.fullstackhub.autokoolweb.models.Question;
+import com.fullstackhub.autokoolweb.services.NotificationService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -19,19 +20,22 @@ import com.vaadin.flow.shared.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
+
 public class AdminQuestionNewForm extends FormLayout {
-    TextField question = new TextField("Вопрос");
-    TextField option1 = new TextField("Вариант ответа 1");
-    TextField option2 = new TextField("Вариант ответа 2");
-    TextField option3 = new TextField("Вариант ответа 3");
+    TextField question = new TextField(ADMIN_QUESTION_FIELD);
+    TextField option1 = new TextField(ADMIN_QUESTION_OPTION1);
+    TextField option2 = new TextField(ADMIN_QUESTION_OPTION2);
+    TextField option3 = new TextField(ADMIN_QUESTION_OPTION3);
     Checkbox answer1 = new Checkbox();
     Checkbox answer2 = new Checkbox();
     Checkbox answer3 = new Checkbox();
-    Button save = new Button("Добавить");
-    Notification notification = new Notification();
+    Button save = new Button(ADMIN_QUESTION_NEW_BUTTON);
     private static final Logger logger = LoggerFactory.getLogger(AdminQuestionNewForm.class);
+    private final NotificationService notificationService;
+    public AdminQuestionNewForm(NotificationService notificationService) {
+        this.notificationService = notificationService;
 
-    public AdminQuestionNewForm() {
         addClassName("admin-question-edit-form");
 
         add(
@@ -82,17 +86,15 @@ public class AdminQuestionNewForm extends FormLayout {
                     questionIn.setOption3(option3.getValue());
                     if (answer3.getValue()) {
                         questionIn.setAnswer3(1);
+                    } else {
+                        questionIn.setAnswer3(0);
                     }
                 }
             }
 
             fireEvent(new AdminQuestionNewForm.SaveEvent(this, questionIn));
         } catch (NullPointerException e) {
-            Span red = new Span("Введите вопрос и варианты ответов!");
-            red.addClassName("red");
-            notification.close();
-            notification = new Notification(red);
-            notification.open();
+            notificationService.showNotification(NOTIFICATION_RED, ADMIN_QUESTION_NEW_ENTER_INFO);
             logger.error(e.getMessage());
         }
     }

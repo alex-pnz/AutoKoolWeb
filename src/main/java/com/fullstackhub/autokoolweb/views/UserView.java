@@ -6,7 +6,9 @@ import com.fullstackhub.autokoolweb.models.Question;
 import com.fullstackhub.autokoolweb.models.Result;
 import com.fullstackhub.autokoolweb.models.User;
 import com.fullstackhub.autokoolweb.repositories.AdminQuestionsRepository;
-import com.fullstackhub.autokoolweb.repositories.AdminUsersRepository;
+import com.fullstackhub.autokoolweb.repositories.UsersRepository;
+import com.fullstackhub.autokoolweb.services.NotificationService;
+import com.fullstackhub.autokoolweb.security.SecurityService;
 import com.fullstackhub.autokoolweb.services.UserResultsService;
 import com.storedobject.chart.*;
 import com.vaadin.flow.component.Key;
@@ -18,13 +20,13 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
+import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,41 +36,46 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@PageTitle("Autokool: User")
-@Route(value = "")
+import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
+
+@PageTitle(USER_VIEW_TITLE)
+@Route(value = USER_VIEW_URL)
+@RolesAllowed("USER")
 public class UserView extends HorizontalLayout {
-    private final AdminUsersRepository adminUsersRepository;
+    private final UsersRepository usersRepository;
     private final AdminQuestionsRepository adminQuestionsRepository;
     private final UserAdminViewMapper userAdminViewMapper;
     private final UserResultsService userResultsService;
-    private Span labelId = new Span("Студент Id: ");
+    private final NotificationService notificationService;
+    private final SecurityService securityService;
+    private Span labelId = new Span(LABEL_ID);
     private Span textId = new Span();
-    private Span labelName = new Span("Имя: ");
+    private Span labelName = new Span(LABEL_NAME);
     private Span textName = new Span();
     private Hr hr = new Hr();
-    private Span labelStat = new Span("Статистика: ");
-    private Span labelPass = new Span("Успешных попыток: ");
+    private Span labelStat = new Span(LABEL_STAT);
+    private Span labelPass = new Span(LABEL_PASS);
     private Span textPass = new Span();
-    private Span labelFail = new Span("Не удачных попыток: ");
+    private Span labelFail = new Span(LABEL_FAIL);
     private Span textFail = new Span();
-    private Span labelIncomplete = new Span("Не завершенных: ");
+    private Span labelIncomplete = new Span(LABEL_INCOMPLETE);
     private Span textIncomplete = new Span();
-    private Span labelTotal = new Span("Всего: ");
+    private Span labelTotal = new Span(LABEL_TOTAL);
     private Span textTotal = new Span();
     private UserAdminViewIn userDTO;
     private SOChart soChart = new SOChart();
-    private Button start = new Button("Начать Экзамен");
-    private Button exit = new Button("Выйти");
+    private Button start = new Button(BUTTON_START);
+    private Button exit = new Button(BUTTON_EXIT);
     private H2 h2 = new H2();
     private Span textQuestion = new Span();
     private Image image = new Image();
     private Checkbox answer1 = new Checkbox();
     private Checkbox answer2 = new Checkbox();
     private Checkbox answer3 = new Checkbox();
-    private Button buttonCheck = new Button("Проверить");
+    private Button buttonCheck = new Button(BUTTON_CHECK);
     private Span labelCorrectOrNot = new Span();
-    private Button buttonNext = new Button("Следующий Вопрос");
-    private Button buttonIncomplete = new Button("Завершить Досрочно");
+    private Button buttonNext = new Button(BUTTON_NEXT);
+    private Button buttonIncomplete = new Button(BUTTON_INCOMPLETE);
     private static int questionsFromDB = 7;
     private static int numberOfQuestionsToPass = 5;
     private static int counter = 0;
@@ -79,14 +86,18 @@ public class UserView extends HorizontalLayout {
     private VerticalLayout examArea = new VerticalLayout();
     private static final Logger logger = LoggerFactory.getLogger(UserView.class);
 
-    public UserView(AdminUsersRepository adminUsersRepository,
+    public UserView(UsersRepository usersRepository,
                     UserAdminViewMapper userAdminViewMapper,
                     AdminQuestionsRepository adminQuestionsRepository,
-                    UserResultsService userResultsService) {
-        this.adminUsersRepository = adminUsersRepository;
+                    UserResultsService userResultsService,
+                    NotificationService notificationService,
+                    SecurityService securityService) {
+        this.usersRepository = usersRepository;
         this.userAdminViewMapper = userAdminViewMapper;
         this.adminQuestionsRepository = adminQuestionsRepository;
         this.userResultsService = userResultsService;
+        this.notificationService = notificationService;
+        this.securityService = securityService;
         setExamArea();
         examArea.setVisible(false);
         setUser();
@@ -109,15 +120,24 @@ public class UserView extends HorizontalLayout {
                 logger.info("Question list: EMPTY; check DB");
             }
         });
+
+        exit.addClickListener(e -> securityService.logout());
+
         start.addClickShortcut(Key.ENTER);
         buttonCheck.addClickListener(e -> {
-            if (!answer1.getValue()&&!answer2.getValue()&&!answer3.getValue()){
-                Span red = new Span("Выберите ответ!");
-                red.addClassName("red");
-                Notification notification = new Notification(red);
-                notification.open();
-            } else{
-                checkAnswer();
+
+            if (answer3.getLabel() != null || !answer3.getLabel().isBlank()) {
+                if (!answer1.getValue()&&!answer2.getValue()&&!answer3.getValue()){
+                    notificationService.showNotification(NOTIFICATION_RED, CHOOSE_ANSWER);
+                } else {
+                    checkAnswer();
+                }
+            } else {
+                if (!answer1.getValue()&&!answer2.getValue()){
+                    notificationService.showNotification(NOTIFICATION_RED, CHOOSE_ANSWER);
+                } else {
+                    checkAnswer();
+                }
             }
         });
 
@@ -127,10 +147,7 @@ public class UserView extends HorizontalLayout {
         });
 
         buttonIncomplete.addClickListener(e -> {
-            Span red = new Span("Экзамен прерван!");
-            red.addClassName("red");
-            Notification notification = new Notification(red);
-            notification.open();
+            notificationService.showNotification(NOTIFICATION_RED, EXAM_INTERRUPTED);
 
             Result resultEntity = new Result(userAdminViewMapper.fomDto(userDTO), 2);
 
@@ -240,7 +257,7 @@ public class UserView extends HorizontalLayout {
     }
 
     private boolean setUser() {
-        User user = adminUsersRepository.findByUsername("zack");
+        User user = usersRepository.findByUsername(securityService.getLoggedUser());
         if (user != null) {
             userDTO = userAdminViewMapper.toDto(user);
             return true;
@@ -264,6 +281,7 @@ public class UserView extends HorizontalLayout {
         answer1.setValue(false);
         answer2.setValue(false);
         if (currentQuestion.getOption3() == null || currentQuestion.getOption3().isBlank()) {
+            answer3.setLabel("");
             answer3.setVisible(false);
         } else {
             answer3.setLabel(currentQuestion.getOption3());
@@ -308,8 +326,8 @@ public class UserView extends HorizontalLayout {
         resultList.add(result?1:0);
 
         labelCorrectOrNot.setVisible(true);
-        labelCorrectOrNot.setText(result?"Правильно":"Не правильно");
-        labelCorrectOrNot.setClassName(result?"green":"red");
+        labelCorrectOrNot.setText(result?LABEL_CORRECT_YES:LABEL_CORRECT_NO);
+        labelCorrectOrNot.setClassName(result?NOTIFICATION_GREEN:NOTIFICATION_RED);
 
         buttonNext.setEnabled(true);
         buttonCheck.setEnabled(false);
@@ -320,10 +338,9 @@ public class UserView extends HorizontalLayout {
 
             int finalResult = (successfulN >= numberOfQuestionsToPass)?1:0;
 
-            Span red = new Span(finalResult==1?"Экзамен сдан успешно!":"Вы не сдали экзамен!");
-            red.addClassName(finalResult==1?"green":"red");
-            Notification notification = new Notification(red);
-            notification.open();
+            notificationService.showNotification(
+                    finalResult==1?NOTIFICATION_GREEN:NOTIFICATION_RED,
+                    finalResult==1?EXAM_PASSED:EXAM_FAILED);
 
             Result resultEntity = new Result(userAdminViewMapper.fomDto(userDTO), finalResult);
 
