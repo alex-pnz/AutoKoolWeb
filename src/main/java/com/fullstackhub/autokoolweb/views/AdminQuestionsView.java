@@ -6,6 +6,7 @@ import com.fullstackhub.autokoolweb.services.QuestionAdminViewService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
@@ -48,6 +49,8 @@ public class AdminQuestionsView extends VerticalLayout {
     private Upload uploadNew = new Upload(memoryBufferNew);
     private Button uploadButton = new Button(ADMIN_QUESTIONS_ADD_IMAGE);
     private Button uploadButtonNew = new Button(ADMIN_QUESTIONS_ADD_IMAGE);
+    Checkbox imageCheckboxEdit = new Checkbox(ADMIN_QUESTIONS_IMAGE_CHECKBOX);
+    Checkbox imageCheckboxNew = new Checkbox(ADMIN_QUESTIONS_IMAGE_CHECKBOX);
 
     private List<Question> questionsList = new ArrayList<>();
     private final NotificationService notificationService;
@@ -63,7 +66,6 @@ public class AdminQuestionsView extends VerticalLayout {
         upload.setAcceptedFileTypes("application/jpg", ".jpg");
         uploadButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         upload.setUploadButton(uploadButton);
-
         uploadNew.setMaxFiles(1);
         uploadNew.setAcceptedFileTypes("application/jpg", ".jpg");
         uploadButtonNew.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
@@ -103,7 +105,6 @@ public class AdminQuestionsView extends VerticalLayout {
                 new Div(setFormEditLayout()));
         tabSheet.add(ADMIN_QUESTIONS_TAB2,
                 new Div(setFormNewLayout()));
-
         return tabSheet;
     }
 
@@ -111,7 +112,8 @@ public class AdminQuestionsView extends VerticalLayout {
         questionEditForm = new AdminQuestionEditForm(notificationService);
         questionEditForm.addSaveListener(this::saveQuestion);
         questionEditForm.addDeleteListener(this::deleteQuestion);
-        HorizontalLayout horizontalLayout = new HorizontalLayout(questionEditForm, new VerticalLayout(image, upload));
+        imageCheckboxEdit.setValue(false);
+        HorizontalLayout horizontalLayout = new HorizontalLayout(questionEditForm, new VerticalLayout(image, upload, imageCheckboxEdit));
         horizontalLayout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
         return horizontalLayout;
     }
@@ -119,8 +121,8 @@ public class AdminQuestionsView extends VerticalLayout {
     private Component setFormNewLayout(){
         questionNewForm = new AdminQuestionNewForm(notificationService);
         questionNewForm.addSaveListener(this::saveNewQuestion);
-
-        HorizontalLayout horizontalLayout = new HorizontalLayout(questionNewForm, new VerticalLayout(imageNew, uploadNew));
+        imageCheckboxNew.setValue(false);
+        HorizontalLayout horizontalLayout = new HorizontalLayout(questionNewForm, new VerticalLayout(imageNew, uploadNew, imageCheckboxNew));
         horizontalLayout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
 
         return horizontalLayout;
@@ -176,18 +178,19 @@ public class AdminQuestionsView extends VerticalLayout {
             currentQuestion.setOption3(null);
             currentQuestion.setAnswer3(null);
         }
-
-        if (!memoryBuffer.getFileName().isBlank()) {
-            currentQuestion.setImage(memoryBuffer.getFileName());
-            String path = String.format(IMAGE_FOLDER_PATH, memoryBuffer.getFileName());
-            logger.info("MemoryBuffer image name : {}", memoryBuffer.getFileName());
-            File file = new File(path);
-            try (OutputStream output = new FileOutputStream(file, false)) {
-                memoryBuffer.getInputStream().transferTo(output);
-            } catch (IOException e) {
-                notificationService.showNotification(NOTIFICATION_RED, ADMIN_QUESTIONS_CANT_SAVE);
-                logger.error(e.getMessage());
-                return null;
+        if (imageCheckboxEdit.getValue()){
+            if (!memoryBuffer.getFileName().isBlank()) {
+                currentQuestion.setImage(memoryBuffer.getFileName());
+                String path = String.format(IMAGE_FOLDER_PATH, memoryBuffer.getFileName());
+                logger.info("MemoryBuffer image name : {}", memoryBuffer.getFileName());
+                File file = new File(path);
+                try (OutputStream output = new FileOutputStream(file, false)) {
+                    memoryBuffer.getInputStream().transferTo(output);
+                } catch (IOException e) {
+                    notificationService.showNotification(NOTIFICATION_RED, ADMIN_QUESTIONS_CANT_SAVE);
+                    logger.error(e.getMessage());
+                    return null;
+                }
             }
         }
         Question savedQuestion = questionAdminViewService.saveQuestionToDataBase(currentQuestion);
@@ -210,18 +213,19 @@ public class AdminQuestionsView extends VerticalLayout {
             currentQuestion.setOption3(null);
             currentQuestion.setAnswer3(null);
         }
-
-        if (!memoryBufferNew.getFileName().isBlank()) {
-            currentQuestion.setImage(memoryBufferNew.getFileName());
-            String path = String.format(IMAGE_FOLDER_PATH, memoryBufferNew.getFileName());
-            logger.info("MemoryBuffer image name : {}", memoryBufferNew.getFileName());
-            File file = new File(path);
-            try (OutputStream output = new FileOutputStream(file, false)) {
-                memoryBufferNew.getInputStream().transferTo(output);
-            } catch (IOException e) {
-                notificationService.showNotification(NOTIFICATION_RED, ADMIN_QUESTIONS_CANT_SAVE);
-                logger.error(e.getMessage());
-                return null;
+        if (imageCheckboxNew.getValue()) {
+            if (!memoryBufferNew.getFileName().isBlank()) {
+                currentQuestion.setImage(memoryBufferNew.getFileName());
+                String path = String.format(IMAGE_FOLDER_PATH, memoryBufferNew.getFileName());
+                logger.info("MemoryBuffer image name : {}", memoryBufferNew.getFileName());
+                File file = new File(path);
+                try (OutputStream output = new FileOutputStream(file, false)) {
+                    memoryBufferNew.getInputStream().transferTo(output);
+                } catch (IOException e) {
+                    notificationService.showNotification(NOTIFICATION_RED, ADMIN_QUESTIONS_CANT_SAVE);
+                    logger.error(e.getMessage());
+                    return null;
+                }
             }
         }
         Question savedQuestion = questionAdminViewService.saveQuestionToDataBase(currentQuestion);
@@ -243,12 +247,12 @@ public class AdminQuestionsView extends VerticalLayout {
         return savedQuestion;
     }
 
-
-
     private void reloadQuestionsTable() {
         questionsList = questionAdminViewService.getAll();
         logger.info("Questions are not empty: {}", questionsList.stream().findAny().isPresent());
         questionsTable.setItems(questionsList);
+        imageCheckboxEdit.setValue(false);
+        imageCheckboxNew.setValue(false);
     }
 
     private void setGrid() {
@@ -284,7 +288,8 @@ public class AdminQuestionsView extends VerticalLayout {
             }
             upload.setVisible(true);
             upload.clearFileList();
-
+            imageCheckboxEdit.setValue(false);
+            imageCheckboxNew.setValue(false);
             memoryBuffer = new MemoryBuffer();
             upload.setReceiver(memoryBuffer);
         }

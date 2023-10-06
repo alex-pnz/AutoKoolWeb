@@ -51,7 +51,8 @@ public class StringConstants {
     // AdminQuestionsView
     public static final String ADMIN_QUESTIONS_TITLE = "Autokool: Questions";
     public static final String ADMIN_QUESTIONS_URL = "admin-questions";
-    public static final String ADMIN_QUESTIONS_ADD_IMAGE = "Добавить картинку...";
+    public static final String ADMIN_QUESTIONS_ADD_IMAGE = "Выбрать картинку...";
+    public static final String ADMIN_QUESTIONS_IMAGE_CHECKBOX = "Добавить картинку к вопросу";
     public static final String ADMIN_QUESTIONS_TAB1 = "Редактировать вопрос";
     public static final String ADMIN_QUESTIONS_TAB2 = "Добавить новый воопрос";
     public static final String IMAGE_FOLDER_PATH = "C:/Users/Sasha/IdeaProjects/AutoKool/Images/%s";
