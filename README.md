@@ -1,9 +1,31 @@
-# AutoKoolWeb
+# AutoKool Web :oncoming_police_car: :oncoming_automobile:
 
-This project can be used as a starting point to create your own Vaadin application with Spring Boot.
-It contains all the necessary configuration and some placeholder files to get you started.
+Introducing a comprehensive Driving Theory Test app, designed to help aspiring drivers master the knowledge and skills required to pass their theory exams with confidence. The app offers a user-friendly interface and a vast collection of practice questions, covering all essential topics such as road signs, traffic regulations, and safe driving practices.
 
-## Running the application
+With our app, you can simulate real exam conditions by taking timed mock tests, allowing you to assess your progress and identify areas that require further improvement. Our detailed explanations for each question will help you understand the reasoning behind the correct answers, ensuring a deeper understanding of the material.
+
+Key features of our Driving Theory Test app include:
+
+1. Extensive Question Bank: Access a wide range of carefully curated questions, covering all aspects of the theory test.
+
+2. Mock Tests: Take simulated exams with randomized questions and time limits to simulate the actual test experience.
+
+3. Progress Tracking: Monitor your performance over time, track your scores, and identify areas for improvement.
+
+4. Offline Access: Study anytime, anywhere, even without an internet connection.
+
+Prepare yourself thoroughly for your driving theory test with our user-friendly and feature-rich app. Download now and embark on your journey towards becoming a confident and knowledgeable driver.
+
+### Project Tech Stack:
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white&style=plastic) ![Spring Boot](https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot&style=plastic)
+![Vaadin](https://img.shields.io/badge/Vaadin-00B4F0?style=for-the-badge&logo=Vaadin&logoColor=white&style=plastic)<br>
+![Spring Security Badge](https://img.shields.io/badge/Spring%20Security-6DB33F?logo=springsecurity&logoColor=fff&style=plastic) ![Maven](https://img.shields.io/badge/Maven-red?logo=Apache+Maven&logoColor=white&style=plastic)<br>
+![Hibernate](https://img.shields.io/badge/Hibernate-59666C?style=for-the-badge&logo=Hibernate&logoColor=white&style=plastic) ![MySQL Badge](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=fff&style=flat&style=plastic) <br>
+
+### Tests:
+![JUnit](https://img.shields.io/badge/Junit5-25A162?style=for-the-badge&logo=junit5&logoColor=white&style=plastic) ![Mockito](https://img.shields.io/badge/Mockito-success?logo=MEGA) ![Selenium](https://img.shields.io/badge/Selenium-CB02A?logo=Selenium&logoColor=white)
+
+### Running the application
 
 The project is a standard Maven project. To run it from the command line,
 type `mvnw` (Windows), or `./mvnw` (Mac & Linux), then open
@@ -12,7 +34,7 @@ http://localhost:8080 in your browser.
 You can also import the project to your IDE of choice as you would with any
 Maven project. Read more on [how to import Vaadin projects to different IDEs](https://vaadin.com/docs/latest/guide/step-by-step/importing) (Eclipse, IntelliJ IDEA, NetBeans, and VS Code).
 
-## Deploying to Production
+### Deploying to Production
 
 To create a production build, call `mvnw clean package -Pproduction` (Windows),
 or `./mvnw clean package -Pproduction` (Mac & Linux).
@@ -22,7 +44,7 @@ ready to be deployed. The file can be found in the `target` folder after the bui
 Once the JAR file is built, you can run it using
 `java -jar target/autokoolweb-1.0-SNAPSHOT.jar`
 
-## Project structure
+### Project structure
 
 - `MainLayout.java` in `src/main/java` contains the navigation setup (i.e., the
   side/top bar and the main menu). This setup uses
@@ -31,17 +53,3 @@ Once the JAR file is built, you can run it using
 - `views` folder in `frontend/` contains the client-side JavaScript views of your application.
 - `themes` folder in `frontend/` contains the custom CSS styles.
 
-## Useful links
-
-- Read the documentation at [vaadin.com/docs](https://vaadin.com/docs).
-- Follow the tutorial at [vaadin.com/docs/latest/tutorial/overview](https://vaadin.com/docs/latest/tutorial/overview).
-- Create new projects at [start.vaadin.com](https://start.vaadin.com/).
-- Search UI components and their usage examples at [vaadin.com/docs/latest/components](https://vaadin.com/docs/latest/components).
-- View use case applications that demonstrate Vaadin capabilities at [vaadin.com/examples-and-demos](https://vaadin.com/examples-and-demos).
-- Build any UI without custom CSS by discovering Vaadin's set of [CSS utility classes](https://vaadin.com/docs/styling/lumo/utility-classes).
-
-  
-- Find a collection of solutions to common use cases at [cookbook.vaadin.com](https://cookbook.vaadin.com/).
-- Find add-ons at [vaadin.com/directory](https://vaadin.com/directory).
-- Ask questions on [Stack Overflow](https://stackoverflow.com/questions/tagged/vaadin) or join our [Discord channel](https://discord.gg/MYFq5RTbBn).
-- Report issues, create pull requests in [GitHub](https://github.com/vaadin).
