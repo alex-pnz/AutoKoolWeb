@@ -120,6 +120,7 @@ public class AdminUsersView extends VerticalLayout {
         notificationService.showNotification(NOTIFICATION_GREEN, ADMIN_USERS_SAVED);
         userNewForm.clear();
         reloadUsersTable();
+        usersTable.scrollToEnd();
         return savedUser;
     }
 

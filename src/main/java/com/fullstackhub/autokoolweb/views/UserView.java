@@ -42,6 +42,7 @@ import static com.fullstackhub.autokoolweb.constants.StringConstants.*;
 @Route(value = USER_VIEW_URL)
 @RolesAllowed("USER")
 public class UserView extends HorizontalLayout {
+
     private final UsersRepository usersRepository;
     private final AdminQuestionsRepository adminQuestionsRepository;
     private final UserAdminViewMapper userAdminViewMapper;
@@ -295,7 +296,7 @@ public class UserView extends HorizontalLayout {
 
     private void setImage(Question question) {
 
-        String path = String.format("C:/Users/Sasha/IdeaProjects/AutoKool/Images/%s", question.getImage());
+        String path = String.format(IMAGE_FOLDER_PATH, question.getImage());
 
         StreamResource imageResource = new StreamResource("MyResourceName", () -> {
             try {
