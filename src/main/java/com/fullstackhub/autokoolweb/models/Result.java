@@ -10,7 +10,7 @@ import java.util.Objects;
 @Table(name="results")
 public class Result {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Integer id;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
