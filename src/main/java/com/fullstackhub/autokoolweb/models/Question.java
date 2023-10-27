@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 @Table(name = "questions")
 public class Question {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idquestions;
     private String question;
     private String image;
