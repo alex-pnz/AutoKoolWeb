@@ -9,14 +9,14 @@ public class StringConstants {
     public static final String LOGIN_VIEW_URL = "login";
 
     // UserView
-    public static final String USER_VIEW_TITLE = "Autokool: Student";
+    public static final String USER_VIEW_TITLE = "Autokool: User";
     public static final String USER_VIEW_URL = "user";
     public static final String CHOOSE_ANSWER = "Выберите ответ!";
     public static final String EXAM_INTERRUPTED = "Экзамен прерван!";
     public static final String EXAM_PASSED = "Экзамен сдан успешно!";
     public static final String EXAM_FAILED = "Вы не сдали экзамен!";
     public static final String LABEL_ID = "Студент Id: ";
-    public static final String LABEL_NAME = "Имя студента: ";
+    public static final String LABEL_NAME = "Имя пользователя: ";
     public static final String LABEL_STAT = "Статистика: ";
     public static final String LABEL_PASS = "Успешных попыток: ";
     public static final String LABEL_FAIL = "Не удачных попыток: ";
@@ -32,7 +32,7 @@ public class StringConstants {
 
     // AdminLayout
     public static final String ADMIN_LAYOUT_H1 = "AutoKoolWeb";
-    public static final String ADMIN_LAYOUT_SIDENAV_USERS = "Студенты";
+    public static final String ADMIN_LAYOUT_SIDENAV_USERS = "Пользователи";
     public static final String ADMIN_LAYOUT_SIDENAV_QUESTIONS = "Вопросы";
 
     // AdminQuestionEditForm
@@ -55,7 +55,7 @@ public class StringConstants {
     public static final String ADMIN_QUESTIONS_IMAGE_CHECKBOX = "Добавить картинку к вопросу";
     public static final String ADMIN_QUESTIONS_TAB1 = "Редактировать вопрос";
     public static final String ADMIN_QUESTIONS_TAB2 = "Добавить новый воопрос";
-    public static final String IMAGE_FOLDER_PATH = "src/main/dev-bundle/webapp/assets/%s";
+    public static final String IMAGE_FOLDER_PATH = "C:/Users/Sasha/IdeaProjects/AutoKool/Images/%s";
     public static final String ADMIN_QUESTIONS_DELETE = "Вопрос удален!";
     public static final String ADMIN_QUESTIONS_CANT_SAVE = "Не получилось сохранить файл!";
     public static final String ADMIN_QUESTIONS_SAVED = "Вопрос сохранен!";
@@ -72,7 +72,7 @@ public class StringConstants {
     public static final String ADMIN_USER_CANT_SAVE = "Пользователь не сохранен!";
 
     // AdminUsersView
-    public static final String ADMIN_USERS_TITLE = "Autokool: Students";
+    public static final String ADMIN_USERS_TITLE = "Autokool: Users";
     public static final String ADMIN_USERS_URL = "admin-users";
     public static final String ADMIN_USERS_EDIT = "Редактировать данные студента";
     public static final String ADMIN_USERS_NEW = "Добавить нового студента";
