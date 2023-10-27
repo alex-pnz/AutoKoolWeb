@@ -55,7 +55,7 @@ public class StringConstants {
     public static final String ADMIN_QUESTIONS_IMAGE_CHECKBOX = "Добавить картинку к вопросу";
     public static final String ADMIN_QUESTIONS_TAB1 = "Редактировать вопрос";
     public static final String ADMIN_QUESTIONS_TAB2 = "Добавить новый воопрос";
-    public static final String IMAGE_FOLDER_PATH = "C:/Users/Sasha/IdeaProjects/AutoKool/Images/%s";
+    public static final String IMAGE_FOLDER_PATH = "src/main/dev-bundle/webapp/assets/images/%s";
     public static final String ADMIN_QUESTIONS_DELETE = "Вопрос удален!";
     public static final String ADMIN_QUESTIONS_CANT_SAVE = "Не получилось сохранить файл!";
     public static final String ADMIN_QUESTIONS_SAVED = "Вопрос сохранен!";
