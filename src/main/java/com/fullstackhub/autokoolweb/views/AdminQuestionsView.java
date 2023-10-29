@@ -1,5 +1,7 @@
 package com.fullstackhub.autokoolweb.views;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.fullstackhub.autokoolweb.models.Question;
 import com.fullstackhub.autokoolweb.services.NotificationService;
 import com.fullstackhub.autokoolweb.services.QuestionAdminViewService;
@@ -14,6 +16,7 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
+import com.vaadin.flow.component.upload.SucceededEvent;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
@@ -23,8 +26,10 @@ import com.vaadin.flow.server.StreamResource;
 import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +59,13 @@ public class AdminQuestionsView extends VerticalLayout {
 
     private List<Question> questionsList = new ArrayList<>();
     private final NotificationService notificationService;
+
+    @Value("${cloudinary.api.secret}")
+    private String apiSecret;
+    Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
+                "cloud_name", "diizdixw9",
+                "api_key", "644889561842845",
+                "api_secret", apiSecret));
 
     public AdminQuestionsView(QuestionAdminViewService questionAdminViewService,
                               NotificationService notificationService) {
@@ -89,6 +101,7 @@ public class AdminQuestionsView extends VerticalLayout {
                 setTabs()
         );
         reloadQuestionsTable();
+
     }
 
     private AbstractStreamResource createResource() {
@@ -129,19 +142,28 @@ public class AdminQuestionsView extends VerticalLayout {
     }
 
     private void setImage(Question question) {
-        String path = String.format(IMAGE_FOLDER_PATH, question.getImage());
 
+        logger.info("Image path: {}", question.getImage());
         StreamResource imageResource = new StreamResource("MyResourceName", () -> {
             try {
-                return new FileInputStream(new File(path));
+                URL url = new URL(question.getImage());
+                return url.openStream();
             } catch (final IOException e) {
                 e.printStackTrace();
                 return null;
             }
         });
-
-        logger.info("Image path: {}", path);
         image.setSrc(imageResource);
+    }
+
+    private String getPublicImageId (String path) {
+        String tempStr = path
+                .replace("https://res.cloudinary.com/diizdixw9/image/upload/","")
+                .replace(".jpg", ""); //TODO Implement regex when have time, not urgent
+
+        String[] tempArr = tempStr.split("/");
+
+        return tempArr[1];
     }
 
     private boolean deleteQuestion(AdminQuestionEditForm.DeleteEvent event) {
@@ -151,6 +173,12 @@ public class AdminQuestionsView extends VerticalLayout {
         boolean deleted = questionAdminViewService.deleteQuestionFromDataBase(tempQuestion);
 
         if(deleted){
+            try {
+                cloudinary.uploader().destroy(getPublicImageId(tempQuestion.getImage()), ObjectUtils.emptyMap());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
             if (event.getQuestion().getImage() != null){
                 String path = String.format(IMAGE_FOLDER_PATH, tempQuestion.getImage());
                 File file = new File(path);
@@ -180,6 +208,7 @@ public class AdminQuestionsView extends VerticalLayout {
         }
         if (imageCheckboxEdit.getValue()){
             if (!memoryBuffer.getFileName().isBlank()) {
+
                 currentQuestion.setImage(memoryBuffer.getFileName());
                 String path = String.format(IMAGE_FOLDER_PATH, memoryBuffer.getFileName());
                 logger.info("MemoryBuffer image name : {}", memoryBuffer.getFileName());
@@ -203,7 +232,6 @@ public class AdminQuestionsView extends VerticalLayout {
         return savedQuestion;
     }
 
-
     private Question saveNewQuestion(AdminQuestionNewForm.SaveEvent event) {
         logger.info("Saving: Selected Question ID: {}", event.getQuestion().getIdquestions());
         Question currentQuestion = event.getQuestion();
@@ -215,12 +243,13 @@ public class AdminQuestionsView extends VerticalLayout {
         }
         if (imageCheckboxNew.getValue()) {
             if (!memoryBufferNew.getFileName().isBlank()) {
-                currentQuestion.setImage(memoryBufferNew.getFileName());
-                String path = String.format(IMAGE_FOLDER_PATH, memoryBufferNew.getFileName());
                 logger.info("MemoryBuffer image name : {}", memoryBufferNew.getFileName());
-                File file = new File(path);
-                try (OutputStream output = new FileOutputStream(file, false)) {
-                    memoryBufferNew.getInputStream().transferTo(output);
+                    try{
+                    String urlToSave = cloudinary.uploader().upload(memoryBufferNew.getInputStream().readAllBytes(),
+                            ObjectUtils.asMap("unique_filename", true)).get("secure_url").toString();
+                    logger.info("url of saved to remote file: {}", urlToSave);
+                    currentQuestion.setImage(urlToSave);
+
                 } catch (IOException e) {
                     notificationService.showNotification(NOTIFICATION_RED, ADMIN_QUESTIONS_CANT_SAVE);
                     logger.error(e.getMessage());

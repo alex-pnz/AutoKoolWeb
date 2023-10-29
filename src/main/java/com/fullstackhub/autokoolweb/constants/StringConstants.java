@@ -56,6 +56,8 @@ public class StringConstants {
     public static final String ADMIN_QUESTIONS_TAB1 = "Редактировать вопрос";
     public static final String ADMIN_QUESTIONS_TAB2 = "Добавить новый воопрос";
     public static final String IMAGE_FOLDER_PATH = "src/main/dev-bundle/webapp/assets/images/%s";
+
+//    public static final String IMAGE_FOLDER_PATH = "https://res.cloudinary.com/diizdixw9/image/upload/v1698590885/%s";
     public static final String ADMIN_QUESTIONS_DELETE = "Вопрос удален!";
     public static final String ADMIN_QUESTIONS_CANT_SAVE = "Не получилось сохранить файл!";
     public static final String ADMIN_QUESTIONS_SAVED = "Вопрос сохранен!";
