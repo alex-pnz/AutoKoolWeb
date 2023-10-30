@@ -23,14 +23,14 @@
 }
 
 .user-view-left-side{
-    background-image: linear-gradient(to right top, #20b160, #21b55e, #22b95b, #24bc58, #27c055);
-    border-radius: 5px;
+    background-image: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);
+
     color: white;
-    height: 50em;
+
 }
 
 .exam-area{
-    height: 50em;
+    height: 50%;
 }
 
 .label-stat{
@@ -39,11 +39,6 @@
 
 .user-hr{
     border-top: 1px solid white;
-}
-
-.question-hr{
-    width:200%;
-    visibility: hidden;
 }
 
 .chart-user-view{
@@ -65,5 +60,5 @@
 }
 
 .next-button {
-    margin-right: 3%;
+    margin-right: 20px;
 }
