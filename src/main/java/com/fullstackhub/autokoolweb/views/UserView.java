@@ -30,8 +30,6 @@ import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -54,6 +52,7 @@ public class UserView extends HorizontalLayout {
     private Span labelName = new Span(LABEL_NAME);
     private Span textName = new Span();
     private Hr hr = new Hr();
+    private Hr hrQuestions = new Hr();
     private Span labelStat = new Span(LABEL_STAT);
     private Span labelPass = new Span(LABEL_PASS);
     private Span textPass = new Span();
@@ -126,6 +125,7 @@ public class UserView extends HorizontalLayout {
                 logger.info("Current Question : {}", currentQuestion.getQuestion());
                 examArea.setVisible(true);
                 start.setEnabled(false);
+                hrQuestions.scrollIntoView();
             } else {
                 logger.info("Question list: EMPTY; check DB");
             }
@@ -231,8 +231,9 @@ public class UserView extends HorizontalLayout {
         answer3.setClassName("exam-area-bottom");;
         hl1.setClassName("exam-area-bottom");;
         hl4.setClassName("exam-area-bottom");;
+        hrQuestions.setClassName("question-hr");
 
-        VerticalLayout vl1 = new VerticalLayout(h2, textQuestion, image);
+        VerticalLayout vl1 = new VerticalLayout(hrQuestions, h2, textQuestion, image);
         VerticalLayout vl2 = new VerticalLayout(answer1, answer2, answer3, hl1, hl4);
 
         examArea.add(vl1, vl2);
@@ -243,7 +244,7 @@ public class UserView extends HorizontalLayout {
 
     private void setChart(UserAdminViewIn userAdminViewIn) {
 
-        CategoryData labels = new CategoryData("Успешно", "Не удачно", "Не завершил", "Всего");
+        CategoryData labels = new CategoryData(LABEL_STATS_1, LABEL_STATS_2, LABEL_STATS_3, LABEL_STATS_4);
         Data data;
         if (userAdminViewIn == null) {
             data = new Data(0, 0, 0, 0);
@@ -277,7 +278,7 @@ public class UserView extends HorizontalLayout {
 
     public void setExamFields(){
         currentQuestion = questionList.get(counter);
-        h2.setText("Билет " + (counter+1));
+        h2.setText(LABEL_TICKET + (counter+1));
         textQuestion.setText(currentQuestion.getQuestion());
 
         if (currentQuestion.getImage() == null || currentQuestion.getImage().isBlank()) {
