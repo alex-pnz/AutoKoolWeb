@@ -4,9 +4,23 @@ public class StringConstants {
     // Notifications
     public static final String NOTIFICATION_RED = "red";
     public static final String NOTIFICATION_GREEN = "green";
+    public static final String LIMIT_TRIES_REACHED = "You reached the limit of tries";
+    public static final int LIMIT_TRIES = 20;
+    public static final int LIMIT_USERS = 30;
 
     // LoginView
     public static final String LOGIN_VIEW_URL = "login";
+    public static final String REGISTER_VIEW_URL = "register";
+    public static final String REGISTER_TEXT = "Register";
+    public static final String REGISTER_USERNAME_TEXT = "Username";
+    public static final String REGISTER_PASSWORD_TEXT = "Password";
+    public static final String REGISTER_CONFIRM_PASSWORD_TEXT = "Confirm password";
+    public static final String REGISTER_ENTER_USERNAME = "Enter a username";
+    public static final String REGISTER_ENTER_PASSWORD = "Enter a password";
+    public static final String REGISTER_MATCH_PASSWORD = "Passwords don't match";
+    public static final String REGISTER_SUCCESS = "Registration succeeded";
+    public static final String REGISTER_FAIL = "Registration failed. Limit of users is reached";
+    public static final String REGISTER_USERNAME_EXISTS = "This username is already in use. Try again...";
 
     // UserView
     public static final String USER_VIEW_TITLE = "Autokool: User";

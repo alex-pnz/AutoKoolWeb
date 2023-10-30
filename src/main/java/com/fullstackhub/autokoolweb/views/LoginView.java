@@ -7,6 +7,7 @@ import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 import static com.fullstackhub.autokoolweb.constants.StringConstants.LOGIN_VIEW_URL;
+import static com.fullstackhub.autokoolweb.constants.StringConstants.REGISTER_TEXT;
 
 @Route(value = LOGIN_VIEW_URL)
 @RouteAlias("")
@@ -26,8 +27,10 @@ public class LoginView extends VerticalLayout implements BeforeEnterListener {
 
         add(
                 new H1("Autokool: Web"),
-                login
+                login,
+                new RouterLink(REGISTER_TEXT, RegisterView.class)
         );
+
     }
 
     @Override

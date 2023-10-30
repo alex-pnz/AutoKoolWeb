@@ -60,12 +60,12 @@ public class AdminQuestionsView extends VerticalLayout {
     private List<Question> questionsList = new ArrayList<>();
     private final NotificationService notificationService;
 
-    @Value("${cloudinary.api.secret}")
+    @Value("${cloudinary.secret}")
     private String apiSecret;
     Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", "diizdixw9",
-                "api_key", "644889561842845",
-                "api_secret", apiSecret));
+                "cloud_name", "diizdixw91",
+                "api_key", "438437266359647",
+                "api_secret", "mpsj6UbdXp3ZgjmGmwBWPr7yMkA"));
 
     public AdminQuestionsView(QuestionAdminViewService questionAdminViewService,
                               NotificationService notificationService) {
@@ -101,7 +101,7 @@ public class AdminQuestionsView extends VerticalLayout {
                 setTabs()
         );
         reloadQuestionsTable();
-
+//        logger.info("cloudiary {}", apiSecret);
     }
 
     private AbstractStreamResource createResource() {
@@ -208,13 +208,13 @@ public class AdminQuestionsView extends VerticalLayout {
         }
         if (imageCheckboxEdit.getValue()){
             if (!memoryBuffer.getFileName().isBlank()) {
+                logger.info("MemoryBuffer image name : {}", memoryBufferNew.getFileName());
+                try{
+                    String urlToSave = cloudinary.uploader().upload(memoryBufferNew.getInputStream().readAllBytes(),
+                            ObjectUtils.asMap("unique_filename", true)).get("secure_url").toString();
+                    logger.info("url of saved to remote file: {}", urlToSave);
+                    currentQuestion.setImage(urlToSave);
 
-                currentQuestion.setImage(memoryBuffer.getFileName());
-                String path = String.format(IMAGE_FOLDER_PATH, memoryBuffer.getFileName());
-                logger.info("MemoryBuffer image name : {}", memoryBuffer.getFileName());
-                File file = new File(path);
-                try (OutputStream output = new FileOutputStream(file, false)) {
-                    memoryBuffer.getInputStream().transferTo(output);
                 } catch (IOException e) {
                     notificationService.showNotification(NOTIFICATION_RED, ADMIN_QUESTIONS_CANT_SAVE);
                     logger.error(e.getMessage());
