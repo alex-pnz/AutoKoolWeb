@@ -26,6 +26,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.WebBrowser;
 import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,6 +105,12 @@ public class UserView extends HorizontalLayout {
         examArea.setVisible(false);
         setUser();
 
+        if (isMobileDevice()) {
+            logger.info("mobile");
+        } else {
+            logger.info("desktop");
+        }
+
         textId.getElement().getStyle().set("font-weight", "bold");
         textName.getElement().getStyle().set("font-weight", "bold");
 
@@ -126,6 +134,9 @@ public class UserView extends HorizontalLayout {
                 logger.info("Current Question : {}", currentQuestion.getQuestion());
                 examArea.setVisible(true);
                 start.setEnabled(false);
+                if (isMobileDevice()) {
+                    examArea.scrollIntoView();
+                }
             } else {
                 logger.info("Question list: EMPTY; check DB");
             }
@@ -173,11 +184,15 @@ public class UserView extends HorizontalLayout {
         });
 
         this.setDefaultVerticalComponentAlignment(Alignment.START);
-        setMargin(true);
         labelStat.setClassName("label-stat");
         soChart.setClassName("chart-user-view");
 
         add(setLeft(), examArea);
+    }
+
+    public  boolean isMobileDevice() {
+        WebBrowser webBrowser = VaadinSession.getCurrent().getBrowser();
+        return webBrowser.isAndroid() || webBrowser.isIPhone() || webBrowser.isWindowsPhone();
     }
 
     public VerticalLayout setLeft() {
@@ -215,7 +230,11 @@ public class UserView extends HorizontalLayout {
 
     public void setExamArea() {
         textQuestion.setClassName("user-view-question-text");
-        examArea.setWidth(70, Unit.PERCENTAGE);
+        if(isMobileDevice()) {
+            examArea.setWidth(100, Unit.PERCENTAGE);
+        } else {
+            examArea.setWidth(70, Unit.PERCENTAGE);
+        }
         HorizontalLayout hl1 = new HorizontalLayout(buttonCheck, labelCorrectOrNot);
         HorizontalLayout hl4 = new HorizontalLayout(buttonNext, buttonIncomplete);
         buttonNext.setClassName("next-button");
