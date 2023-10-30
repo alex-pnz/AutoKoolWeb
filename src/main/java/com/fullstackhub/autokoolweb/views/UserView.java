@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,6 +109,15 @@ public class UserView extends HorizontalLayout {
         start.addClickListener(e -> {
             resultList.clear();
             questionList.clear();
+            if (userDTO.getResults() != null){
+                logger.info("DTO results = {}", userDTO.getResults());
+            } else {
+                logger.info("DTO results = 0");
+            }
+            if (userDTO.getResults() != null && userDTO.getResults().size()>LIMIT_TRIES){
+                notificationService.showNotification(NOTIFICATION_RED,LIMIT_TRIES_REACHED);
+                return;
+            }
             questionList = adminQuestionsRepository.getRandomQuestions(questionsFromDB);
             counter = 0;
             if (questionList!=null&&!questionList.isEmpty()){
@@ -295,18 +305,16 @@ public class UserView extends HorizontalLayout {
 
     private void setImage(Question question) {
 
-        String path = String.format("C:/Users/Sasha/IdeaProjects/AutoKool/Images/%s", question.getImage());
-
+        logger.info("Image path: {}", question.getImage());
         StreamResource imageResource = new StreamResource("MyResourceName", () -> {
             try {
-                return new FileInputStream(new File(path));
+                URL url = new URL(question.getImage());
+                return url.openStream();
             } catch (final IOException e) {
                 e.printStackTrace();
                 return null;
             }
         });
-
-        logger.info("Image path: {}", path);
         image.setSrc(imageResource);
     }
 
