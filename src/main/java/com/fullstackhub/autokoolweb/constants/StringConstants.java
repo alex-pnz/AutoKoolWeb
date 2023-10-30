@@ -11,6 +11,8 @@ public class StringConstants {
     // LoginView
     public static final String LOGIN_VIEW_URL = "login";
     public static final String REGISTER_VIEW_URL = "register";
+
+    // RegisterView
     public static final String REGISTER_TEXT = "Register";
     public static final String REGISTER_USERNAME_TEXT = "Username";
     public static final String REGISTER_PASSWORD_TEXT = "Password";
@@ -43,6 +45,11 @@ public class StringConstants {
     public static final String BUTTON_INCOMPLETE = "Завершить Досрочно";
     public static final String LABEL_CORRECT_YES = "Правильно";
     public static final String LABEL_CORRECT_NO = "Не правильно";
+    public static final String LABEL_STATS_1 = "Успешно";
+    public static final String LABEL_STATS_2 = "Не удачно";
+    public static final String LABEL_STATS_3 = "Не завершил";
+    public static final String LABEL_STATS_4 = "Всего";
+    public static final String LABEL_TICKET = "Билет ";
 
     // AdminLayout
     public static final String ADMIN_LAYOUT_H1 = "AutoKoolWeb";

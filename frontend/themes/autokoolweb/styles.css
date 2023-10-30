@@ -24,7 +24,7 @@
 
 .user-view-left-side{
     background-image: linear-gradient(to right top, #20b160, #21b55e, #22b95b, #24bc58, #27c055);
-    border-radius: 10px;
+    border-radius: 5px;
     color: white;
     height: 50em;
 }
@@ -39,6 +39,11 @@
 
 .user-hr{
     border-top: 1px solid white;
+}
+
+.question-hr{
+    width:200%;
+    visibility: hidden;
 }
 
 .chart-user-view{
@@ -60,5 +65,5 @@
 }
 
 .next-button {
-    margin-right: 90%;
+    margin-right: 3%;
 }
