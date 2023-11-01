@@ -42,7 +42,7 @@ public class StringConstants {
     public static final String BUTTON_EXIT = "Выйти";
     public static final String BUTTON_CHECK = "Проверить";
     public static final String BUTTON_NEXT = "Следующий Вопрос";
-    public static final String BUTTON_INCOMPLETE = "Завершить Досрочно";
+    public static final String BUTTON_INCOMPLETE = "Завершить";
     public static final String LABEL_CORRECT_YES = "Правильно";
     public static final String LABEL_CORRECT_NO = "Не правильно";
     public static final String LABEL_STATS_1 = "Успешно";
